@@ -32,6 +32,25 @@ def _parse_inline_list(val: str) -> List[Any]:
     return [_parse_scalar(item) for item in items if item]
 
 
+def _parse_block_dict(lines: List[str], start_idx: int) -> Tuple[Dict[str, Any], int]:
+    """Parse indented key-value dictionary under a parent key."""
+    sub_dict: Dict[str, Any] = {}
+    i = start_idx
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            i += 1
+            continue
+        if not (line.startswith("  ") or line.startswith("\t")):
+            break
+        if ":" in stripped:
+            k, v = stripped.split(":", 1)
+            sub_dict[k.strip()] = _parse_scalar(v.strip())
+        i += 1
+    return sub_dict, i
+
+
 def _parse_block_list(lines: List[str], start_idx: int) -> Tuple[List[Any], int]:
     """Parse indented or block list of scalars or single-level dicts."""
     items: List[Any] = []
@@ -65,7 +84,7 @@ def _parse_block_list(lines: List[str], start_idx: int) -> Tuple[List[Any], int]
 
 
 def parse_restricted_yaml(yaml_text: str) -> Dict[str, Any]:
-    """Parse safe subset of YAML (scalars, lists, inline lists, dicts)."""
+    """Parse safe subset of YAML (scalars, lists, inline lists, nested dicts)."""
     result: Dict[str, Any] = {}
     lines = yaml_text.splitlines()
     i = 0
@@ -82,11 +101,19 @@ def parse_restricted_yaml(yaml_text: str) -> Dict[str, Any]:
 
             if val_clean.startswith("[") and val_clean.endswith("]"):
                 result[key] = _parse_inline_list(val_clean)
-            elif not val_clean and (i + 1 < len(lines)) and lines[i + 1].strip().startswith("-"):
-                items, next_i = _parse_block_list(lines, i + 1)
-                result[key] = items
-                i = next_i
-                continue
+            elif not val_clean and (i + 1 < len(lines)) and (lines[i + 1].startswith(" ") or lines[i + 1].startswith("\t")):
+                next_stripped = lines[i + 1].strip()
+                if next_stripped.startswith("-"):
+                    items, next_i = _parse_block_list(lines, i + 1)
+                    result[key] = items
+                    i = next_i
+                    continue
+                elif ":" in next_stripped:
+                    sub_dict, next_i = _parse_block_dict(lines, i + 1)
+                    result[key] = sub_dict
+                    i = next_i
+                    continue
+                result[key] = _parse_scalar(val_clean)
             else:
                 result[key] = _parse_scalar(val_clean)
         i += 1

@@ -9,6 +9,9 @@ from .domain_events import (
     PreRunExecutionEvent,
     PostRunExecutionEvent,
     HealthCheckCompletedEvent,
+    AssetUploadedEvent,
+    AssetDownloadedEvent,
+    AssetVerifiedEvent,
 )
 
 __all__ = [
@@ -21,4 +24,8 @@ __all__ = [
     "PreRunExecutionEvent",
     "PostRunExecutionEvent",
     "HealthCheckCompletedEvent",
+    "AssetUploadedEvent",
+    "AssetDownloadedEvent",
+    "AssetVerifiedEvent",
 ]
+

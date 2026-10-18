@@ -5,7 +5,6 @@ import os
 import sys
 from pathlib import Path
 
-# Add project root to sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -18,49 +17,81 @@ from src.commands.cmd_create import run_create
 from src.commands.cmd_schedule import run_schedule
 from src.commands.cmd_run import run_code
 from src.commands.cmd_secrets import run_secrets
+from src.commands.cmd_asset import (
+    run_asset_push,
+    run_asset_pull,
+    run_asset_check,
+    run_asset_list,
+)
 from src.core.errors import KBError
 from src.events.dispatcher import get_event_dispatcher
 from src.listeners.audit_listener import AuditEventListener
 from src.listeners.telemetry_listener import TelemetryEventListener
 
 
+def _add_asset_subparsers(subparsers) -> None:
+    """Register asset push, pull, check, and list subcommands."""
+    asset_p = subparsers.add_parser("asset", help="Manage cloud-offloaded binary assets and companion markdown")
+    add_common_flags(asset_p)
+    asset_subs = asset_p.add_subparsers(dest="asset_action", required=True)
+
+    push_p = asset_subs.add_parser("push", help="Upload binary asset to storage and generate companion markdown")
+    add_common_flags(push_p)
+    push_p.add_argument("file", help="Local binary asset file path")
+    push_p.add_argument("--key", help="Remote storage object key")
+    push_p.add_argument("--companion", help="Companion markdown path under knowledge/")
+    push_p.add_argument("--title", help="Document title for companion")
+    push_p.add_argument("--owner", help="Document owner handle")
+    push_p.add_argument("--backend", help="Storage backend (local, s3)")
+
+    pull_p = asset_subs.add_parser("pull", help="Download asset from storage on-demand")
+    add_common_flags(pull_p)
+    pull_p.add_argument("key", help="Remote storage object key to fetch")
+    pull_p.add_argument("--target", help="Destination file path")
+    pull_p.add_argument("--backend", help="Storage backend (local, s3)")
+
+    check_p = asset_subs.add_parser("check", help="Check remote asset existence without downloading blob")
+    add_common_flags(check_p)
+    check_p.add_argument("key", help="Remote storage object key to check")
+    check_p.add_argument("--backend", help="Storage backend (local, s3)")
+
+    list_p = asset_subs.add_parser("list", help="Discover companion assets across local and cloud tiers")
+    add_common_flags(list_p)
+    list_p.add_argument("--tier", choices=["local", "cloud", "all"], default="local", help="Discovery tier")
+    list_p.add_argument("--backend", help="Storage backend (local, s3)")
+
+
 def _build_parser() -> AgentArgumentParser:
     """Build root CLI argument parser and register subcommands."""
-    parser = AgentArgumentParser(
-        prog="kb",
-        description=f"{APP_DESCRIPTION} (v{APP_VERSION})",
-    )
+    parser = AgentArgumentParser(prog="kb", description=f"{APP_DESCRIPTION} (v{APP_VERSION})")
     parser.add_argument("--version", action="version", version=f"kb {APP_VERSION}")
     add_common_flags(parser)
 
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
 
-    # doctor
     doc_p = subparsers.add_parser("doctor", help="Audit schema, dead links, line limits, and secret leaks")
     add_common_flags(doc_p)
+    doc_p.add_argument("--check-assets", action="store_true", help="Audit cloud assets existence in companions")
 
-    # map
     map_p = subparsers.add_parser("map", help="Display token-budget bounded repository tree")
     add_common_flags(map_p)
     map_p.add_argument("--depth", type=int, default=2, help="Maximum traversal depth (default: 2)")
+    map_p.add_argument("--with-assets", action="store_true", help="Include asset companion metadata in map tree")
 
-    # create
     create_p = subparsers.add_parser("create", help="Scaffold new document from template")
     add_common_flags(create_p)
-    create_p.add_argument("template", help="Template type (adr, runbook, activity)")
+    create_p.add_argument("template", help="Template type (adr, runbook, activity, companion)")
     create_p.add_argument("path", help="Relative destination path under knowledge/")
     create_p.add_argument("--title", help="Document title")
     create_p.add_argument("--owner", help="Owner handle or team name")
     create_p.add_argument("--force", action="store_true", help="Overwrite existing document")
 
-    # schedule
     sched_p = subparsers.add_parser("schedule", help="Query upcoming deadlines using bounded min-heap")
     add_common_flags(sched_p)
     sched_p.add_argument("--limit", type=int, default=10, help="Max deadlines to return (default: 10)")
     sched_p.add_argument("--category", help="Filter by document category")
     sched_p.add_argument("--all", action="store_true", help="Include archived/completed documents")
 
-    # run
     run_p = subparsers.add_parser("run", help="Hermetically execute command with runtime secret injection")
     add_common_flags(run_p)
     run_p.add_argument("--timeout", type=float, default=60.0, help="Command timeout in seconds")
@@ -68,12 +99,40 @@ def _build_parser() -> AgentArgumentParser:
     run_p.add_argument("--cwd", help="Working directory for command")
     run_p.add_argument("cmd", nargs="+", help="Command and arguments to execute")
 
-    # secrets
     sec_p = subparsers.add_parser("secrets", help="Inspect active secret provider and available keys")
     add_common_flags(sec_p)
     sec_p.add_argument("--vault", help="Secret provider backend to inspect")
 
+    _add_asset_subparsers(subparsers)
     return parser
+
+
+def _dispatch_asset_command(args, dispatcher, is_json: bool) -> int:
+    """Route asset subcommands (push, pull, check, list)."""
+    if args.asset_action == "push":
+        code, payload = run_asset_push(
+            local_file=args.file,
+            remote_key=args.key,
+            companion_path=args.companion,
+            title=args.title,
+            owner=args.owner,
+            backend=args.backend,
+            dispatcher=dispatcher,
+        )
+    elif args.asset_action == "pull":
+        code, payload = run_asset_pull(
+            remote_key=args.key,
+            target_path=args.target,
+            backend=args.backend,
+            dispatcher=dispatcher,
+        )
+    elif args.asset_action == "check":
+        code, payload = run_asset_check(remote_key=args.key, backend=args.backend, dispatcher=dispatcher)
+    else:  # list
+        code, payload = run_asset_list(tier=args.tier, backend=args.backend)
+
+    output_result(payload, is_json)
+    return code
 
 
 def _dispatch_command(args, dispatcher) -> int:
@@ -81,15 +140,13 @@ def _dispatch_command(args, dispatcher) -> int:
     is_json = getattr(args, "json", False)
 
     if args.subcommand == "doctor":
-        code, payload = run_doctor(dispatcher=dispatcher)
+        code, payload = run_doctor(dispatcher=dispatcher, check_assets=args.check_assets)
         output_result(payload, is_json)
         return code
-
     if args.subcommand == "map":
-        code, payload = run_map(depth=args.depth, compact=args.compact)
+        code, payload = run_map(depth=args.depth, compact=args.compact, with_assets=args.with_assets)
         output_result(payload, is_json)
         return code
-
     if args.subcommand == "create":
         code, payload = run_create(
             template_type=args.template,
@@ -101,16 +158,10 @@ def _dispatch_command(args, dispatcher) -> int:
         )
         output_result(payload, is_json)
         return code
-
     if args.subcommand == "schedule":
-        code, payload = run_schedule(
-            limit=args.limit,
-            category=args.category,
-            active_only=not args.all,
-        )
+        code, payload = run_schedule(limit=args.limit, category=args.category, active_only=not args.all)
         output_result(payload, is_json)
         return code
-
     if args.subcommand == "run":
         cwd_path = Path(args.cwd) if args.cwd else None
         code, payload = run_code(
@@ -123,11 +174,12 @@ def _dispatch_command(args, dispatcher) -> int:
         )
         output_result(payload, is_json)
         return code
-
     if args.subcommand == "secrets":
         code, payload = run_secrets(vault_backend=args.vault)
         output_result(payload, is_json)
         return code
+    if args.subcommand == "asset":
+        return _dispatch_asset_command(args, dispatcher, is_json)
 
     return EX_OK
 

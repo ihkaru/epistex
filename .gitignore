@@ -12,11 +12,14 @@ __pycache__/
 *.pem
 *.token
 
-# Storage, Cache, and Ephemeral Logs
+# Storage, Cache, Ephemeral Logs, and Local Asset Blobs
 storage/cache/*
 storage/logs/*
+storage/assets/*
 !storage/cache/.gitkeep
 !storage/logs/.gitkeep
+!storage/assets/.gitkeep
+
 .cache/
 .pytest_cache/
 .coverage

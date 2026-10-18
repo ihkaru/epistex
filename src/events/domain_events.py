@@ -111,3 +111,49 @@ class HealthCheckCompletedEvent(BaseDomainEvent):
                 "dead_link_count": dead_link_count,
             },
         )
+
+
+class AssetUploadedEvent(BaseDomainEvent):
+    """Triggered when a binary asset is offloaded to cloud/local storage."""
+
+    def __init__(self, remote_key: str, backend: str, size_bytes: int, sha256: str) -> None:
+        super().__init__(
+            "asset.uploaded",
+            {
+                "remote_key": remote_key,
+                "backend": backend,
+                "size_bytes": size_bytes,
+                "sha256": sha256,
+            },
+        )
+
+
+class AssetDownloadedEvent(BaseDomainEvent):
+    """Triggered when a binary asset is downloaded/hydrated on demand."""
+
+    def __init__(self, remote_key: str, backend: str, target_path: str, size_bytes: int) -> None:
+        super().__init__(
+            "asset.downloaded",
+            {
+                "remote_key": remote_key,
+                "backend": backend,
+                "target_path": target_path,
+                "size_bytes": size_bytes,
+            },
+        )
+
+
+class AssetVerifiedEvent(BaseDomainEvent):
+    """Triggered when asset integrity or remote existence is verified."""
+
+    def __init__(self, remote_key: str, backend: str, exists: bool, match_sha256: bool) -> None:
+        super().__init__(
+            "asset.verified",
+            {
+                "remote_key": remote_key,
+                "backend": backend,
+                "exists": exists,
+                "match_sha256": match_sha256,
+            },
+        )
+

@@ -59,3 +59,10 @@ When a command fails with `--json`, it returns an actionable envelope enabling s
 - **Hermetic Code Execution**:
   - `kb run -- <cmd>` executes commands in a stripped environment, injecting secrets in-memory from Infisical (or fallback).
   - Supports `--dry-run` to preview commands and injected keys without executing.
+- **Cloud Asset Offloading & Tiered Hydration**:
+  - Offload binary files: `kb asset push <file> --key <key> --companion <path.md>` to keep Git lightweight.
+  - Check existence without downloading: `kb asset check <key>`.
+  - Hydrate / download binary on-demand: `kb asset pull <key> --target <path>`.
+  - Discover assets: `kb asset list --tier local|cloud|all`.
+  - Verify asset integrity during health check: `kb doctor --check-assets --json`.
+

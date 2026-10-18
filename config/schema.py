@@ -20,6 +20,7 @@ ALLOWED_CATEGORIES = [
     "rfc",                    # Request for comments
     "activity",               # Structured operational activity
     "guideline",              # General engineering or process guideline
+    "asset-companion",        # Cloud-offloaded binary asset companion
 ]
 
 # Required top-level frontmatter fields
@@ -62,4 +63,19 @@ DEFAULT_TEMPLATES: Dict[str, Dict[str, Any]] = {
             {"milestone": "Final Review", "due": "2026-11-15"},
         ],
     },
+    "companion": {
+        "title": "Untitled Binary Asset Companion",
+        "status": "active",
+        "category": "asset-companion",
+        "owner": "@team",
+        "asset": {
+            "remote_key": "assets/sample.pdf",
+            "sha256": "",
+            "size_bytes": 0,
+            "mime_type": "application/pdf",
+            "storage_backend": "local",
+            "sync_status": "remote",
+        },
+    },
 }
+

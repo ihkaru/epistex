@@ -7,6 +7,12 @@ from .cmd_create import run_create
 from .cmd_schedule import run_schedule
 from .cmd_run import run_code
 from .cmd_secrets import run_secrets
+from .cmd_asset import (
+    run_asset_push,
+    run_asset_pull,
+    run_asset_check,
+    run_asset_list,
+)
 
 __all__ = [
     "AgentArgumentParser",
@@ -18,4 +24,9 @@ __all__ = [
     "run_schedule",
     "run_code",
     "run_secrets",
+    "run_asset_push",
+    "run_asset_pull",
+    "run_asset_check",
+    "run_asset_list",
 ]
+

@@ -44,6 +44,7 @@ This repository is an enterprise-grade, plug-and-play, high-performance Git-base
 3. **Schedule Query ($O(M \log k)$)**: Query upcoming deadlines using a bounded min-heap (`heapq`).
 4. **Link Integrity Audit ($O(N + R)$)**: Single-pass hash inverted index for $O(1)$ relative link lookups.
 5. **Class & Function Length Caps**: Classes must not exceed 180 lines; functions must not exceed 50 lines.
+6. **Cloud Asset Offloading (Git Bloat Prevention)**: Binary files (PDFs, images, archives) must not be committed directly to Git. Use `kb asset push` to offload to cloud storage with a Git-native companion markdown pointer. Cloud connectivity is strictly opt-in.
 
 ## 4. Verification & Testing Commands
 Run all automated verification gates:
@@ -51,9 +52,10 @@ Run all automated verification gates:
 # 1. Run unit and integration tests
 python3 -m unittest discover -s tests -v
 
-# 2. Run repository doctor audit
-./bin/kb doctor --json
+# 2. Run repository doctor audit (with optional asset verification)
+./bin/kb doctor --check-assets --json
 
 # 3. Test hermetic dry-run execution
 ./bin/kb run --dry-run -- python3 --version
 ```
+

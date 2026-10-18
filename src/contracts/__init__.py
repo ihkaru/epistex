@@ -5,6 +5,7 @@ from .secret_provider import SecretProviderInterface
 from .code_runner import CodeRunnerInterface, ExecutionResult
 from .document_repository import DocumentMetadata, DocumentRepositoryInterface
 from .schema_validator import SchemaValidatorInterface, ValidationIssue
+from .asset_storage import AssetDescriptor, AssetStorageInterface
 
 __all__ = [
     "EventInterface",
@@ -16,4 +17,7 @@ __all__ = [
     "DocumentRepositoryInterface",
     "SchemaValidatorInterface",
     "ValidationIssue",
+    "AssetDescriptor",
+    "AssetStorageInterface",
 ]
+

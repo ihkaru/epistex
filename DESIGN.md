@@ -57,3 +57,22 @@ The Knowledge Base Starter Kit couples **Domain-Driven Content Organization** wi
 - **First-Party Infisical Provider**: Direct extraction from Infisical CLI over TLS.
 - **Universal Auth Integration**: Machine-to-machine authentication via Infisical Universal Auth (`client-id` and `client-secret`).
 - **Graceful Zero-Crash Fallback**: Automatically degrades to `EnvSecretProvider` when Infisical is unconfigured.
+
+## 5. Cloud Asset Offloading & Tiered Discovery (Git Bloat Prevention)
+Storing large binary assets (PDFs, images, datasets, archives) directly in Git causes repository bloat and slows down clones and AI context loading.
+
+### A. Companion Markdown Pointer Pattern
+- **Git Repository**: Stores lightweight companion markdown files (`category: asset-companion`) containing frontmatter metadata (`remote_key`, `sha256`, `size_bytes`, `mime_type`, `storage_backend`).
+- **Remote Cloud / Local Cache**: Heavy binary payloads live in S3-compatible cloud storage (or local offline cache).
+- **Zero Vendor Lock-In**: Interface-first `AssetStorageInterface` decouples the codebase from any cloud provider. Standard SigV4 S3 provider works seamlessly across AWS S3, Cloudflare R2, MinIO, Ceph, Backblaze B2, and Coolify S3 using pure Python standard library.
+
+### B. Tiered Discovery Architecture
+- **Tier 1: Local Offline Git Discovery (Default)**:
+  - Commands like `kb map` and `kb doctor` only inspect local markdown files and pointers.
+  - Zero network overhead, instant execution, 100% offline-ready.
+- **Tier 2: On-Demand Remote Verification & Hydration (Opt-In)**:
+  - `kb asset check <key>`: Verifies remote asset existence without downloading the blob.
+  - `kb asset pull <key>`: Streams and verifies SHA-256 checksum on-demand.
+  - `kb doctor --check-assets`: Verifies whether remote assets referenced in companion documents actually exist in cloud storage.
+  - `kb map --with-assets`: Embeds remote asset metadata into the repository tree.
+

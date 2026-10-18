@@ -140,9 +140,31 @@ Scaffolds documents from standard templates (`adr`, `runbook`, `activity`) using
 ./bin/kb create adr engineering/adr/ADR-002-distributed-tracing.md --title "Distributed Tracing"
 ```
 
+### 7. Cloud Asset Offloading & Tiered Hydration (`kb asset`)
+
+Prevent Git repository bloat by storing heavy binary assets (PDFs, images, datasets) in cloud/local storage while keeping lightweight companion markdown pointers in Git:
+
+```bash
+# 1. Offload binary asset and generate Git companion markdown atomically
+./bin/kb asset push path/to/spec.pdf --key specs/network-topology.pdf --companion engineering/assets/network.md --title "Network Topology"
+
+# 2. Check remote asset existence without downloading full blob
+./bin/kb asset check specs/network-topology.pdf --json
+
+# 3. Discover assets across local and cloud tiers
+./bin/kb asset list --tier all --json
+
+# 4. Download / hydrate asset on-demand and verify SHA-256
+./bin/kb asset pull specs/network-topology.pdf --target /tmp/restored-spec.pdf --json
+
+# 5. Audit cloud assets in doctor
+./bin/kb doctor --check-assets --json
+```
+
 ---
 
 ## Running Verification & Tests
+
 
 Execute the parallel hermetic test suite:
 ```bash
