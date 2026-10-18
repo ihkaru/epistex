@@ -11,6 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from config.app import APP_DESCRIPTION, APP_VERSION, EX_OK, EX_SOFTWARE
 from src.commands.base_command import AgentArgumentParser, add_common_flags, output_result
+from src.commands.cmd_init import run_init
 from src.commands.cmd_doctor import run_doctor
 from src.commands.cmd_map import run_map
 from src.commands.cmd_create import run_create
@@ -65,14 +66,15 @@ def _add_asset_subparsers(subparsers) -> None:
     list_p.add_argument("--cloud-auth", choices=["env", "hermetic", "auto"], help="Cloud credentials source")
 
 
-def _build_parser() -> AgentArgumentParser:
-    """Build root CLI argument parser and register subcommands."""
-    prog_name = Path(sys.argv[0]).name if sys.argv and sys.argv[0] else "gnosidex"
-    parser = AgentArgumentParser(prog=prog_name, description=f"{APP_DESCRIPTION} (v{APP_VERSION})")
-    parser.add_argument("--version", action="version", version=f"gnosidex (kb) {APP_VERSION}")
-    add_common_flags(parser)
-
-    subparsers = parser.add_subparsers(dest="subcommand", required=True)
+def _add_core_subparsers(subparsers) -> None:
+    """Register core discovery, creation, and execution subcommands."""
+    init_p = subparsers.add_parser("init", help="Initialize and specialize repository for an organization")
+    add_common_flags(init_p)
+    init_p.add_argument("--name", help="Organization or project name")
+    init_p.add_argument("--description", help="Project description")
+    init_p.add_argument("--owner", help="Default owner handle (e.g. @team)")
+    init_p.add_argument("--clean-samples", action="store_true", help="Remove starter sample documents")
+    init_p.add_argument("--keep-notice", action="store_true", help="Keep specialization notice in README")
 
     doc_p = subparsers.add_parser("doctor", help="Audit schema, dead links, line limits, and secret leaks")
     add_common_flags(doc_p)
@@ -91,6 +93,17 @@ def _build_parser() -> AgentArgumentParser:
     create_p.add_argument("--title", help="Document title")
     create_p.add_argument("--owner", help="Owner handle or team name")
     create_p.add_argument("--force", action="store_true", help="Overwrite existing document")
+
+
+def _build_parser() -> AgentArgumentParser:
+    """Build root CLI argument parser and register subcommands."""
+    prog_name = Path(sys.argv[0]).name if sys.argv and sys.argv[0] else "gnosidex"
+    parser = AgentArgumentParser(prog=prog_name, description=f"{APP_DESCRIPTION} (v{APP_VERSION})")
+    parser.add_argument("--version", action="version", version=f"gnosidex (kb) {APP_VERSION}")
+    add_common_flags(parser)
+
+    subparsers = parser.add_subparsers(dest="subcommand", required=True)
+    _add_core_subparsers(subparsers)
 
     sched_p = subparsers.add_parser("schedule", help="Query upcoming deadlines using bounded min-heap")
     add_common_flags(sched_p)
@@ -146,10 +159,21 @@ def _dispatch_asset_command(args, dispatcher, is_json: bool) -> int:
     return code
 
 
-def _dispatch_command(args, dispatcher) -> int:
-    """Route parsed subcommand to corresponding domain handler."""
-    is_json = getattr(args, "json", False)
-
+def _dispatch_admin_command(args, dispatcher, is_json: bool) -> Optional[int]:
+    """Route admin/setup commands (init, doctor, map, create)."""
+    if args.subcommand == "init":
+        code, payload = run_init(
+            name=args.name,
+            description=args.description,
+            owner=args.owner,
+            clean_samples=args.clean_samples,
+            clean_notice=not args.keep_notice,
+            dry_run=args.dry_run,
+            interactive=not (getattr(args, "non_interactive", False) or is_json),
+            dispatcher=dispatcher,
+        )
+        output_result(payload, is_json)
+        return code
     if args.subcommand == "doctor":
         code, payload = run_doctor(
             dispatcher=dispatcher,
@@ -173,6 +197,16 @@ def _dispatch_command(args, dispatcher) -> int:
         )
         output_result(payload, is_json)
         return code
+    return None
+
+
+def _dispatch_command(args, dispatcher) -> int:
+    """Route parsed subcommand to corresponding domain handler."""
+    is_json = getattr(args, "json", False)
+    admin_code = _dispatch_admin_command(args, dispatcher, is_json)
+    if admin_code is not None:
+        return admin_code
+
     if args.subcommand == "schedule":
         code, payload = run_schedule(limit=args.limit, category=args.category, active_only=not args.all)
         output_result(payload, is_json)

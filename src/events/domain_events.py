@@ -157,3 +157,18 @@ class AssetVerifiedEvent(BaseDomainEvent):
             },
         )
 
+
+class RepositoryInitializedEvent(BaseDomainEvent):
+    """Triggered when repository is specialized/initialized for an organization."""
+
+    def __init__(self, name: str, description: str, owner: str, cleaned_samples: bool) -> None:
+        super().__init__(
+            "repository.initialized",
+            {
+                "name": name,
+                "description": description,
+                "owner": owner,
+                "cleaned_samples": cleaned_samples,
+            },
+        )
+

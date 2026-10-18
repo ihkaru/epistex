@@ -19,27 +19,27 @@
 When tailoring this starter kit to your organization's specific requirements, execute the following specialization sequence:
 
 ### 1. Identity & Metadata Customization
-- **[`config/app.py`](file:///root/projects/kb-starter-kit/config/app.py)**: Update `APP_NAME`, `APP_DESCRIPTION`, and `APP_VERSION` to reflect your team or organizational identity.
-- **[`README.md`](file:///root/projects/kb-starter-kit/README.md)**: Replace the root title and introductory charter with your organization's specific mission and guidelines.
+- **[`config/app.py`](file:///root/projects/gnosidex/config/app.py)**: Update `APP_NAME`, `APP_DESCRIPTION`, and `APP_VERSION` to reflect your team or organizational identity.
+- **[`README.md`](file:///root/projects/gnosidex/README.md)**: Replace the root title and introductory charter with your organization's specific mission and guidelines.
 
 ### 2. Schema & Governance Rules
-- **[`config/schema.py`](file:///root/projects/kb-starter-kit/config/schema.py)**:
+- **[`config/schema.py`](file:///root/projects/gnosidex/config/schema.py)**:
   - Customize `ALLOWED_STATUSES` (e.g., `["draft", "in-review", "approved", "deprecated"]`).
   - Customize `ALLOWED_CATEGORIES` (e.g., adding `sop`, `data-dictionary`, `postmortem`, `rfc`).
   - Adjust `REQUIRED_FRONTMATTER_FIELDS` to enforce internal team governance.
   - Tailor `DEFAULT_TEMPLATES` for your automated document scaffolding via `kb create`.
 
 ### 3. Secret Vault & Cloud Storage Integration
-- **Environment Template**: Copy [`.env.example`](file:///root/projects/kb-starter-kit/.env.example) to `.env` (`cp .env.example .env`).
-- **Secret Vault ([`config/vault.py`](file:///root/projects/kb-starter-kit/config/vault.py))**:
+- **Environment Template**: Copy [`.env.example`](file:///root/projects/gnosidex/.env.example) to `.env` (`cp .env.example .env`).
+- **Secret Vault ([`config/vault.py`](file:///root/projects/gnosidex/config/vault.py))**:
   - Point `INFISICAL_API_URL` and `INFISICAL_PROJECT_ID` to your organization's Infisical instance.
   - Inject Machine Identity credentials (`INFISICAL_CLIENT_ID`, `INFISICAL_CLIENT_SECRET`) or use `KB_VAULT_BACKEND=env` for standard CI runners.
-- **Cloud Storage ([`config/cloud.py`](file:///root/projects/kb-starter-kit/config/cloud.py))**:
+- **Cloud Storage ([`config/cloud.py`](file:///root/projects/gnosidex/config/cloud.py))**:
   - Configure `S3_ENDPOINT_URL`, `S3_BUCKET_NAME`, and `S3_REGION` (compatible with AWS S3, Cloudflare R2, MinIO, Coolify S3, Backblaze).
   - Select your cloud authentication mode: `KB_CLOUD_AUTH=hermetic` (zero disk secrets) or `env`.
 
 ### 4. Knowledge Domain Organization
-- **Prune Sample Documents**: Remove or replace initial boilerplate examples in [`knowledge/engineering/adr/`](file:///root/projects/kb-starter-kit/knowledge/engineering/adr/) and [`knowledge/activities/`](file:///root/projects/kb-starter-kit/knowledge/activities/).
+- **Prune Sample Documents**: Remove or replace initial boilerplate examples in [`knowledge/engineering/adr/`](file:///root/projects/gnosidex/knowledge/engineering/adr/) and [`knowledge/activities/`](file:///root/projects/gnosidex/knowledge/activities/).
 - **Establish Business Domains**: Create domain directories that map to your team's real operational boundaries (e.g. `knowledge/data-platform/`, `knowledge/governance/`, `knowledge/infrastructure/`).
 - **Scaffold New Documents**: Use `./bin/kb create <template> <path>` to generate new standard documents with atomic writes.
 
@@ -86,7 +86,7 @@ When tailoring this starter kit to your organization's specific requirements, ex
 ## Directory Taxonomy
 
 ```text
-kb-starter-kit/
+gnosidex/
 ├── bin/
 │   └── kb                           # Executable CLI runner (chmod +x)
 ├── config/                          # Convention-over-configuration settings
