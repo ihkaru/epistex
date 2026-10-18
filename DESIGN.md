@@ -1,11 +1,11 @@
-# System Design & Architecture (DESIGN.md)
+# Gnosidex System Design & Architecture (DESIGN.md)
 
 ## 1. High-Level Architecture
-The Knowledge Base Starter Kit couples **Domain-Driven Content Organization** with an **Event-Driven CLI Engine** and **Hermetic Code Execution Runner**:
+**Gnosidex** couples **Domain-Driven Content Organization** with an **Event-Driven CLI Engine** and **Hermetic Code Execution Runner**:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
-│                               kb CLI                                   │
+│                        gnosidex / kb CLI                               │
 │            (Agent-First Stream Purity / POSIX Exit Codes)              │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │

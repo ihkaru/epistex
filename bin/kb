@@ -67,8 +67,9 @@ def _add_asset_subparsers(subparsers) -> None:
 
 def _build_parser() -> AgentArgumentParser:
     """Build root CLI argument parser and register subcommands."""
-    parser = AgentArgumentParser(prog="kb", description=f"{APP_DESCRIPTION} (v{APP_VERSION})")
-    parser.add_argument("--version", action="version", version=f"kb {APP_VERSION}")
+    prog_name = Path(sys.argv[0]).name if sys.argv and sys.argv[0] else "gnosidex"
+    parser = AgentArgumentParser(prog=prog_name, description=f"{APP_DESCRIPTION} (v{APP_VERSION})")
+    parser.add_argument("--version", action="version", version=f"gnosidex (kb) {APP_VERSION}")
     add_common_flags(parser)
 
     subparsers = parser.add_subparsers(dest="subcommand", required=True)

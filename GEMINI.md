@@ -1,18 +1,19 @@
-# Repository Architecture & Governance Guide (GEMINI.md)
+# Gnosidex Architecture & Governance Guide (GEMINI.md)
 
 ## 1. Overview & Core Philosophy
-This repository is an enterprise-grade, plug-and-play, high-performance Git-based Knowledge Base (KB) starter kit. It provides:
+**Gnosidex** is an enterprise-grade, plug-and-play, high-performance Git-based Knowledge Base starter kit. It provides:
 - **Zero External Runtime Dependencies**: Standard Python 3.10+ execution out of the box.
 - **Convention-Over-Configuration**: Predictable Laravel-inspired folder layout (`bin/`, `config/`, `knowledge/`, `src/`, `storage/`).
 - **SOLID & Interface-First Design**: Strict Dependency Inversion via abstract contracts (`src/contracts/`).
 - **Event-Driven Architecture (EDA)**: Extensible pub/sub dispatcher and lifecycle hooks (`src/events/`).
 - **Hermetic Code Execution**: Memory-only secret injection with first-party Infisical support and fallback to process environment.
-- **Dual-Audience CLI (`kb`)**: Agent-first tool contract with pure machine-readable STDOUT on `--json` and POSIX sysexits.
+- **Dual-Audience CLI (`gnosidex` / `kb`)**: Agent-first tool contract with pure machine-readable STDOUT on `--json` and POSIX sysexits.
 
 ## 2. Directory Taxonomy & Conventions
 ```text
 .
 ├── bin/
+│   ├── gnosidex                     # Primary executable symlink (chmod +x)
 │   └── kb                           # Executable CLI entrypoint (chmod +x)
 ├── config/                          # Centralized convention configuration
 │   ├── app.py                       # App metadata, defaults, exit code mappings

@@ -1,11 +1,12 @@
-# Enterprise Git-Based Knowledge Base Starter Kit
+# Gnosidex
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Zero-Dependency Core](https://img.shields.io/badge/dependencies-zero_runtime-success.svg)]()
 [![Code Architecture](https://img.shields.io/badge/architecture-SOLID%20%7C%20EDA%20%7C%20DIP-purple.svg)]()
+[![Release Cadence](https://img.shields.io/badge/versioning-SemVer%202.0%20(Laravel%20Model)-blue.svg)]()
 
-A high-performance, enterprise-ready, plug-and-play **Git-based Knowledge Base Starter Kit** engineered with an **Agent-First Tool Contract**, **Event-Driven Architecture (EDA)**, **Interface-First Design (SOLID)**, and **Hermetic Code Execution with Runtime Secret Injection** (first-party support for Infisical and zero vendor lock-in).
+**Gnosidex** (from *Gnosis* [insight/knowledge] + *Codex* [structured index]) is a high-performance, enterprise-ready, plug-and-play **Git-based Knowledge Base Starter Kit** engineered with an **Agent-First Tool Contract**, **Event-Driven Architecture (EDA)**, **Interface-First Design (SOLID)**, and **Hermetic Code Execution with Runtime Secret Injection** (first-party support for Infisical and zero vendor lock-in).
 
 > [!IMPORTANT]
 > **Starter Kit Specialization Notice (Replace Once Adopted)**:
@@ -216,6 +217,40 @@ Example hermetic upload with Infisical secrets:
 ```bash
 ./bin/kb asset push report.pdf --key reports/q4.pdf --backend s3 --cloud-auth hermetic
 ```
+
+---
+
+## 🏷️ Version Control & Branching Strategy (Laravel Model)
+
+Gnosidex adopts the **Laravel Release & Branching Architecture** to balance rapid open-source innovation with rock-solid enterprise stability:
+
+```text
+  [1.x / Stable Series] ─────► v1.0.0 ──► v1.0.1 (Patches: bugfixes & zero breaking changes)
+          ▲
+          │ Non-breaking PRs & additive features
+  [Feature Branches]    ─────► feat/* or bugfix/*
+          ▲
+  [Main / Canonical]    ─────► Production-ready stable release baseline
+```
+
+1. **Major Series Branches (`1.x`, `2.x`)**:
+   - Modeled after Laravel's release branches (e.g. `11.x`), the `1.x` branch serves as the active maintenance line for the 1.x major series.
+   - Bugfixes, minor non-breaking enhancements, and routine maintenance PRs target `1.x`.
+2. **Canonical Trunk (`main`)**:
+   - Represents production-ready, verified code.
+   - Every merge to `main` must pass the automated Gauntlet (32 unit tests, static SRP analysis, zero-mock detector).
+3. **Semantic Versioning 2.0.0 (`vMAJOR.MINOR.PATCH`)**:
+   - **`PATCH` (e.g. `v1.0.1`)**: Backward-compatible bugfixes and performance optimizations.
+   - **`MINOR` (e.g. `v1.1.0`)**: New CLI commands, additional templates, non-breaking schema additions.
+   - **`MAJOR` (e.g. `v2.0.0`)**: Scheduled breaking architectural shifts or deprecation cleanups.
+4. **Starter Kit Downstream Upgrades**:
+   - When downstream organizations adopt Gnosidex as their internal knowledge base, they can track upstream improvements without conflict by adding Gnosidex as an upstream remote:
+     ```bash
+     git remote add upstream https://github.com/ihkaru/gnosidex.git
+     git fetch upstream 1.x
+     git merge --no-commit upstream/1.x
+     ```
+   - Because organizational documents live in `knowledge/` and the core engine lives in `src/`, upstream engine upgrades merge cleanly without colliding with internal documentation.
 
 ---
 
