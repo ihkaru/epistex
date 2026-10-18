@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+"""Main executable entrypoint for kb CLI tool."""
+
+import os
+import sys
+from pathlib import Path
+
+# Add project root to sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from config.app import APP_DESCRIPTION, APP_VERSION, EX_OK, EX_SOFTWARE
+from src.commands.base_command import AgentArgumentParser, add_common_flags, output_result
+from src.commands.cmd_doctor import run_doctor
+from src.commands.cmd_map import run_map
+from src.commands.cmd_create import run_create
+from src.commands.cmd_schedule import run_schedule
+from src.commands.cmd_run import run_code
+from src.commands.cmd_secrets import run_secrets
+from src.core.errors import KBError
+from src.events.dispatcher import get_event_dispatcher
+from src.listeners.audit_listener import AuditEventListener
+from src.listeners.telemetry_listener import TelemetryEventListener
+
+
+def _build_parser() -> AgentArgumentParser:
+    """Build root CLI argument parser and register subcommands."""
+    parser = AgentArgumentParser(
+        prog="kb",
+        description=f"{APP_DESCRIPTION} (v{APP_VERSION})",
+    )
+    parser.add_argument("--version", action="version", version=f"kb {APP_VERSION}")
+    add_common_flags(parser)
+
+    subparsers = parser.add_subparsers(dest="subcommand", required=True)
+
+    # doctor
+    doc_p = subparsers.add_parser("doctor", help="Audit schema, dead links, line limits, and secret leaks")
+    add_common_flags(doc_p)
+
+    # map
+    map_p = subparsers.add_parser("map", help="Display token-budget bounded repository tree")
+    add_common_flags(map_p)
+    map_p.add_argument("--depth", type=int, default=2, help="Maximum traversal depth (default: 2)")
+
+    # create
+    create_p = subparsers.add_parser("create", help="Scaffold new document from template")
+    add_common_flags(create_p)
+    create_p.add_argument("template", help="Template type (adr, runbook, activity)")
+    create_p.add_argument("path", help="Relative destination path under knowledge/")
+    create_p.add_argument("--title", help="Document title")
+    create_p.add_argument("--owner", help="Owner handle or team name")
+    create_p.add_argument("--force", action="store_true", help="Overwrite existing document")
+
+    # schedule
+    sched_p = subparsers.add_parser("schedule", help="Query upcoming deadlines using bounded min-heap")
+    add_common_flags(sched_p)
+    sched_p.add_argument("--limit", type=int, default=10, help="Max deadlines to return (default: 10)")
+    sched_p.add_argument("--category", help="Filter by document category")
+    sched_p.add_argument("--all", action="store_true", help="Include archived/completed documents")
+
+    # run
+    run_p = subparsers.add_parser("run", help="Hermetically execute command with runtime secret injection")
+    add_common_flags(run_p)
+    run_p.add_argument("--timeout", type=float, default=60.0, help="Command timeout in seconds")
+    run_p.add_argument("--vault", help="Secret provider backend (infisical, env, memory, auto)")
+    run_p.add_argument("--cwd", help="Working directory for command")
+    run_p.add_argument("cmd", nargs="+", help="Command and arguments to execute")
+
+    # secrets
+    sec_p = subparsers.add_parser("secrets", help="Inspect active secret provider and available keys")
+    add_common_flags(sec_p)
+    sec_p.add_argument("--vault", help="Secret provider backend to inspect")
+
+    return parser
+
+
+def _dispatch_command(args, dispatcher) -> int:
+    """Route parsed subcommand to corresponding domain handler."""
+    is_json = getattr(args, "json", False)
+
+    if args.subcommand == "doctor":
+        code, payload = run_doctor(dispatcher=dispatcher)
+        output_result(payload, is_json)
+        return code
+
+    if args.subcommand == "map":
+        code, payload = run_map(depth=args.depth, compact=args.compact)
+        output_result(payload, is_json)
+        return code
+
+    if args.subcommand == "create":
+        code, payload = run_create(
+            template_type=args.template,
+            target_rel_path=args.path,
+            title=args.title,
+            owner=args.owner,
+            force=args.force,
+            dispatcher=dispatcher,
+        )
+        output_result(payload, is_json)
+        return code
+
+    if args.subcommand == "schedule":
+        code, payload = run_schedule(
+            limit=args.limit,
+            category=args.category,
+            active_only=not args.all,
+        )
+        output_result(payload, is_json)
+        return code
+
+    if args.subcommand == "run":
+        cwd_path = Path(args.cwd) if args.cwd else None
+        code, payload = run_code(
+            command=args.cmd,
+            cwd=cwd_path,
+            vault_backend=args.vault,
+            timeout=args.timeout,
+            dry_run=args.dry_run,
+            dispatcher=dispatcher,
+        )
+        output_result(payload, is_json)
+        return code
+
+    if args.subcommand == "secrets":
+        code, payload = run_secrets(vault_backend=args.vault)
+        output_result(payload, is_json)
+        return code
+
+    return EX_OK
+
+
+def main() -> None:
+    """CLI bootstrap entrypoint."""
+    dispatcher = get_event_dispatcher()
+    dispatcher.subscribe("*", AuditEventListener().handle)
+    dispatcher.subscribe("*", TelemetryEventListener(enabled=True).handle)
+
+    parser = _build_parser()
+    try:
+        args = parser.parse_args()
+        exit_code = _dispatch_command(args, dispatcher)
+        sys.exit(exit_code)
+    except KBError as err:
+        output_result(err.to_envelope(), is_json="--json" in sys.argv or not sys.stdout.isatty())
+        sys.exit(err.exit_code)
+    except Exception as ex:
+        err_envelope = {
+            "status": "error",
+            "exit_code": EX_SOFTWARE,
+            "error_type": "UNCAUGHT_EXCEPTION",
+            "message": str(ex),
+        }
+        output_result(err_envelope, is_json="--json" in sys.argv or not sys.stdout.isatty())
+        sys.exit(EX_SOFTWARE)
+
+
+if __name__ == "__main__":
+    main()

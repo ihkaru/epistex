@@ -1,0 +1,61 @@
+"""Configuration package for knowledge base starter kit."""
+
+from .app import (
+    ROOT_DIR,
+    KNOWLEDGE_DIR,
+    STORAGE_DIR,
+    CACHE_DIR,
+    LOGS_DIR,
+    APP_NAME,
+    APP_VERSION,
+    APP_DESCRIPTION,
+    DEFAULT_IGNORED_DIRS,
+    EX_OK,
+    EX_USAGE,
+    EX_DATAERR,
+    EX_NOINPUT,
+    EX_SOFTWARE,
+    EX_CONFIG,
+)
+from .schema import (
+    ALLOWED_STATUSES,
+    ALLOWED_CATEGORIES,
+    REQUIRED_FRONTMATTER_FIELDS,
+    DEFAULT_TEMPLATES,
+)
+from .vault import (
+    VAULT_BACKEND,
+    INFISICAL_API_URL,
+    INFISICAL_PROJECT_ID,
+    INFISICAL_ENVIRONMENT,
+    INFISICAL_SECRET_PATH,
+    SAFE_HOST_ENV_VARS,
+)
+
+__all__ = [
+    "ROOT_DIR",
+    "KNOWLEDGE_DIR",
+    "STORAGE_DIR",
+    "CACHE_DIR",
+    "LOGS_DIR",
+    "APP_NAME",
+    "APP_VERSION",
+    "APP_DESCRIPTION",
+    "DEFAULT_IGNORED_DIRS",
+    "EX_OK",
+    "EX_USAGE",
+    "EX_DATAERR",
+    "EX_NOINPUT",
+    "EX_SOFTWARE",
+    "EX_CONFIG",
+    "ALLOWED_STATUSES",
+    "ALLOWED_CATEGORIES",
+    "REQUIRED_FRONTMATTER_FIELDS",
+    "DEFAULT_TEMPLATES",
+    "VAULT_BACKEND",
+    "INFISICAL_API_URL",
+    "INFISICAL_PROJECT_ID",
+    "INFISICAL_ENVIRONMENT",
+    "INFISICAL_SECRET_PATH",
+    "SAFE_HOST_ENV_VARS",
+]

@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment & Secrets (Zero-Disk Secret Leak Prevention)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.token
+
+# Storage, Cache, and Ephemeral Logs
+storage/cache/*
+storage/logs/*
+!storage/cache/.gitkeep
+!storage/logs/.gitkeep
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS and Editor artifacts
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
