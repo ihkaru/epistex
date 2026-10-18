@@ -8,17 +8,18 @@ import os
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 from config.cloud import (
     S3_ENDPOINT_URL,
     S3_BUCKET_NAME,
     S3_REGION,
     S3_ACCESS_KEY_ID,
     S3_SECRET_ACCESS_KEY,
+    CLOUD_AUTH_MODE,
 )
 from src.contracts.asset_storage import AssetDescriptor, AssetStorageInterface
+from src.contracts.secret_provider import SecretProviderInterface
 from src.core.errors import VaultError
-from .local_provider import compute_file_sha256
 
 
 def _sign(key: bytes, msg: str) -> bytes:
@@ -34,6 +35,47 @@ def _get_signature_key(key: str, date_stamp: str, region_name: str, service_name
     return _sign(k_service, "aws4_request")
 
 
+def _resolve_s3_credentials(
+    auth_mode: str,
+    secret_provider: Optional[SecretProviderInterface],
+    endpoint_url: str,
+    bucket: str,
+    region: str,
+    access_key: Optional[str],
+    secret_key: Optional[str],
+) -> Tuple[str, str, str, str, str]:
+    """Resolve S3 configuration via pure env or pure hermetic secret injection."""
+    mode = auth_mode.lower()
+
+    if mode == "hermetic":
+        if not secret_provider:
+            raise VaultError("Hermetic cloud auth requested but no SecretProvider was provided.", backend="s3")
+        ak = access_key or secret_provider.get_secret("AWS_ACCESS_KEY_ID") or ""
+        sk = secret_key or secret_provider.get_secret("AWS_SECRET_ACCESS_KEY") or ""
+        ep = secret_provider.get_secret("S3_ENDPOINT_URL") or endpoint_url
+        bk = secret_provider.get_secret("S3_BUCKET_NAME") or bucket
+        rg = secret_provider.get_secret("S3_REGION") or region
+        if not ak or not sk:
+            raise VaultError("Hermetic injection missing AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY.", backend="s3")
+        return ep.rstrip("/"), bk, rg, ak, sk
+
+    if mode == "env":
+        ak = access_key or os.getenv("AWS_ACCESS_KEY_ID", "")
+        sk = secret_key or os.getenv("AWS_SECRET_ACCESS_KEY", "")
+        ep = os.getenv("S3_ENDPOINT_URL", endpoint_url)
+        bk = os.getenv("S3_BUCKET_NAME", bucket)
+        rg = os.getenv("S3_REGION", region)
+        return ep.rstrip("/"), bk, rg, ak, sk
+
+    # Mode: auto (try secret provider first, fall back to host env)
+    ak = access_key or (secret_provider.get_secret("AWS_ACCESS_KEY_ID") if secret_provider else None) or os.getenv("AWS_ACCESS_KEY_ID", "")
+    sk = secret_key or (secret_provider.get_secret("AWS_SECRET_ACCESS_KEY") if secret_provider else None) or os.getenv("AWS_SECRET_ACCESS_KEY", "")
+    ep = (secret_provider.get_secret("S3_ENDPOINT_URL") if secret_provider else None) or os.getenv("S3_ENDPOINT_URL", endpoint_url)
+    bk = (secret_provider.get_secret("S3_BUCKET_NAME") if secret_provider else None) or os.getenv("S3_BUCKET_NAME", bucket)
+    rg = (secret_provider.get_secret("S3_REGION") if secret_provider else None) or os.getenv("S3_REGION", region)
+    return ep.rstrip("/"), bk, rg, ak, sk
+
+
 class S3CompatibleAssetProvider(AssetStorageInterface):
     """S3-compatible cloud storage provider using pure Python Standard Library REST & SigV4."""
 
@@ -44,12 +86,14 @@ class S3CompatibleAssetProvider(AssetStorageInterface):
         region: str = S3_REGION,
         access_key: Optional[str] = None,
         secret_key: Optional[str] = None,
+        auth_mode: str = CLOUD_AUTH_MODE,
+        secret_provider: Optional[SecretProviderInterface] = None,
     ) -> None:
-        self.endpoint_url = endpoint_url.rstrip("/")
-        self.bucket = bucket
-        self.region = region
-        self.access_key = access_key or S3_ACCESS_KEY_ID or os.getenv("AWS_ACCESS_KEY_ID", "")
-        self.secret_key = secret_key or S3_SECRET_ACCESS_KEY or os.getenv("AWS_SECRET_ACCESS_KEY", "")
+        self.auth_mode = auth_mode
+        self.secret_provider = secret_provider
+        self.endpoint_url, self.bucket, self.region, self.access_key, self.secret_key = _resolve_s3_credentials(
+            auth_mode, secret_provider, endpoint_url, bucket, region, access_key, secret_key
+        )
 
     def _build_url(self, remote_key: str) -> str:
         """Construct endpoint URL for bucket and object key."""

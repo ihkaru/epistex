@@ -40,6 +40,7 @@ from .cloud import (
     S3_ACCESS_KEY_ID,
     S3_SECRET_ACCESS_KEY,
     DEFAULT_CHUNK_SIZE,
+    CLOUD_AUTH_MODE,
 )
 
 __all__ = [
@@ -76,5 +77,7 @@ __all__ = [
     "S3_ACCESS_KEY_ID",
     "S3_SECRET_ACCESS_KEY",
     "DEFAULT_CHUNK_SIZE",
+    "CLOUD_AUTH_MODE",
 ]
+
 

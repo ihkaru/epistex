@@ -19,3 +19,7 @@ S3_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
 
 # Default max upload chunk size (5MB for streaming)
 DEFAULT_CHUNK_SIZE = 5 * 1024 * 1024
+
+# Cloud authentication mode: "env" (pure environment variables), "hermetic" (runtime secret injection), or "auto"
+CLOUD_AUTH_MODE = os.getenv("KB_CLOUD_AUTH", "auto").lower()
+

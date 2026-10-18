@@ -161,6 +161,20 @@ Prevent Git repository bloat by storing heavy binary assets (PDFs, images, datas
 ./bin/kb doctor --check-assets --json
 ```
 
+#### Opt-In Cloud Storage & Flexible Authentication Modes
+Cloud storage is **strictly opt-in** (`local` by default). When using an S3-compatible backend (`--backend s3` or `KB_CLOUD_STORAGE=s3`), credentials can be resolved via three security postures:
+1. **Hermetic Injection (`--cloud-auth hermetic` or `KB_CLOUD_AUTH=hermetic`)**:
+   Credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, etc.) are resolved strictly in-memory from the configured `SecretProviderInterface` (e.g. Infisical). Host `os.environ` is bypassed and no credentials ever touch disk.
+2. **Environment Only (`--cloud-auth env` or `KB_CLOUD_AUTH=env`)**:
+   Credentials are read strictly from host `os.environ` / `.env`.
+3. **Auto Detection (`--cloud-auth auto` or `KB_CLOUD_AUTH=auto`)**:
+   Checks secret provider first, then falls back to ambient environment.
+
+Example hermetic upload with Infisical secrets:
+```bash
+./bin/kb asset push report.pdf --key reports/q4.pdf --backend s3 --cloud-auth hermetic
+```
+
 ---
 
 ## Running Verification & Tests

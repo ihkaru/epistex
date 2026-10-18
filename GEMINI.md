@@ -44,7 +44,7 @@ This repository is an enterprise-grade, plug-and-play, high-performance Git-base
 3. **Schedule Query ($O(M \log k)$)**: Query upcoming deadlines using a bounded min-heap (`heapq`).
 4. **Link Integrity Audit ($O(N + R)$)**: Single-pass hash inverted index for $O(1)$ relative link lookups.
 5. **Class & Function Length Caps**: Classes must not exceed 180 lines; functions must not exceed 50 lines.
-6. **Cloud Asset Offloading (Git Bloat Prevention)**: Binary files (PDFs, images, archives) must not be committed directly to Git. Use `kb asset push` to offload to cloud storage with a Git-native companion markdown pointer. Cloud connectivity is strictly opt-in.
+6. **Cloud Asset Offloading & Auth Modes (Git Bloat Prevention)**: Binary files (PDFs, images, archives) must not be committed directly to Git. Use `kb asset push` to offload to cloud storage with a Git-native companion markdown pointer. Cloud connectivity is strictly opt-in (`local` by default) with three configurable auth postures (`--cloud-auth` / `KB_CLOUD_AUTH`): `hermetic` (memory-only secret injection via `SecretProviderInterface`), `env` (environment variables), or `auto`.
 
 ## 4. Verification & Testing Commands
 Run all automated verification gates:

@@ -76,3 +76,16 @@ Storing large binary assets (PDFs, images, datasets, archives) directly in Git c
   - `kb doctor --check-assets`: Verifies whether remote assets referenced in companion documents actually exist in cloud storage.
   - `kb map --with-assets`: Embeds remote asset metadata into the repository tree.
 
+### C. Cloud Authentication Modes (Opt-In & Hermetic)
+To guarantee security and flexibility across CI/CD, local dev, and enterprise agent environments, cloud storage authentication supports three distinct modes via `--cloud-auth` or `KB_CLOUD_AUTH`:
+- **`hermetic` (Hermetic Secret Injection)**:
+  - Completely bypasses ambient host `os.environ`.
+  - Credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_ENDPOINT_URL`, etc.) are resolved strictly in memory from `SecretProviderInterface` (e.g., Infisical Vault).
+  - If keys are missing in the vault, raises `VaultError` with an actionable fix hint. Zero credentials touch the disk.
+- **`env` (Environment-Only)**:
+  - Resolves credentials strictly from host environment variables (`os.environ`).
+  - Useful for traditional container setups or standard CI runners.
+- **`auto` (Hybrid Default)**:
+  - Attempts secret retrieval from the active `SecretProviderInterface` first.
+  - Falls back gracefully to host environment variables if vault values are not present.
+

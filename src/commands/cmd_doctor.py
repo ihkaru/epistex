@@ -106,14 +106,17 @@ def run_doctor(
     base_dir: Path = KNOWLEDGE_DIR,
     dispatcher: Optional[EventDispatcherInterface] = None,
     check_assets: bool = False,
+    cloud_auth: Optional[str] = None,
+    secret_provider: Optional[SecretProviderInterface] = None,
     asset_storage: Optional[AssetStorageInterface] = None,
 ) -> Tuple[int, Dict[str, Any]]:
     """Execute complete health audit: schema linting, dead links, secret leaks, and opt-in asset checks."""
     validator = SchemaValidator()
     file_index = build_inverted_file_index(ROOT_DIR)
-    storage = (asset_storage or create_asset_storage()) if check_assets else None
+    storage = (asset_storage or create_asset_storage(auth_mode=cloud_auth, secret_provider=secret_provider)) if check_assets else None
     schema_issues, link_issues, leak_issues, asset_issues = [], [], [], []
     total_files = 0
+
 
     for doc in scan_markdown_files(base_dir):
         total_files += 1

@@ -43,22 +43,26 @@ def _add_asset_subparsers(subparsers) -> None:
     push_p.add_argument("--title", help="Document title for companion")
     push_p.add_argument("--owner", help="Document owner handle")
     push_p.add_argument("--backend", help="Storage backend (local, s3)")
+    push_p.add_argument("--cloud-auth", choices=["env", "hermetic", "auto"], help="Cloud credentials source")
 
     pull_p = asset_subs.add_parser("pull", help="Download asset from storage on-demand")
     add_common_flags(pull_p)
     pull_p.add_argument("key", help="Remote storage object key to fetch")
     pull_p.add_argument("--target", help="Destination file path")
     pull_p.add_argument("--backend", help="Storage backend (local, s3)")
+    pull_p.add_argument("--cloud-auth", choices=["env", "hermetic", "auto"], help="Cloud credentials source")
 
     check_p = asset_subs.add_parser("check", help="Check remote asset existence without downloading blob")
     add_common_flags(check_p)
     check_p.add_argument("key", help="Remote storage object key to check")
     check_p.add_argument("--backend", help="Storage backend (local, s3)")
+    check_p.add_argument("--cloud-auth", choices=["env", "hermetic", "auto"], help="Cloud credentials source")
 
     list_p = asset_subs.add_parser("list", help="Discover companion assets across local and cloud tiers")
     add_common_flags(list_p)
     list_p.add_argument("--tier", choices=["local", "cloud", "all"], default="local", help="Discovery tier")
     list_p.add_argument("--backend", help="Storage backend (local, s3)")
+    list_p.add_argument("--cloud-auth", choices=["env", "hermetic", "auto"], help="Cloud credentials source")
 
 
 def _build_parser() -> AgentArgumentParser:
@@ -72,6 +76,7 @@ def _build_parser() -> AgentArgumentParser:
     doc_p = subparsers.add_parser("doctor", help="Audit schema, dead links, line limits, and secret leaks")
     add_common_flags(doc_p)
     doc_p.add_argument("--check-assets", action="store_true", help="Audit cloud assets existence in companions")
+    doc_p.add_argument("--cloud-auth", choices=["env", "hermetic", "auto"], help="Cloud credentials source")
 
     map_p = subparsers.add_parser("map", help="Display token-budget bounded repository tree")
     add_common_flags(map_p)
@@ -109,6 +114,7 @@ def _build_parser() -> AgentArgumentParser:
 
 def _dispatch_asset_command(args, dispatcher, is_json: bool) -> int:
     """Route asset subcommands (push, pull, check, list)."""
+    auth = getattr(args, "cloud_auth", None)
     if args.asset_action == "push":
         code, payload = run_asset_push(
             local_file=args.file,
@@ -117,6 +123,7 @@ def _dispatch_asset_command(args, dispatcher, is_json: bool) -> int:
             title=args.title,
             owner=args.owner,
             backend=args.backend,
+            cloud_auth=auth,
             dispatcher=dispatcher,
         )
     elif args.asset_action == "pull":
@@ -124,12 +131,15 @@ def _dispatch_asset_command(args, dispatcher, is_json: bool) -> int:
             remote_key=args.key,
             target_path=args.target,
             backend=args.backend,
+            cloud_auth=auth,
             dispatcher=dispatcher,
         )
     elif args.asset_action == "check":
-        code, payload = run_asset_check(remote_key=args.key, backend=args.backend, dispatcher=dispatcher)
+        code, payload = run_asset_check(
+            remote_key=args.key, backend=args.backend, cloud_auth=auth, dispatcher=dispatcher
+        )
     else:  # list
-        code, payload = run_asset_list(tier=args.tier, backend=args.backend)
+        code, payload = run_asset_list(tier=args.tier, backend=args.backend, cloud_auth=auth)
 
     output_result(payload, is_json)
     return code
@@ -140,7 +150,11 @@ def _dispatch_command(args, dispatcher) -> int:
     is_json = getattr(args, "json", False)
 
     if args.subcommand == "doctor":
-        code, payload = run_doctor(dispatcher=dispatcher, check_assets=args.check_assets)
+        code, payload = run_doctor(
+            dispatcher=dispatcher,
+            check_assets=args.check_assets,
+            cloud_auth=getattr(args, "cloud_auth", None),
+        )
         output_result(payload, is_json)
         return code
     if args.subcommand == "map":

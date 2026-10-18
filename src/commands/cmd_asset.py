@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from config.app import KNOWLEDGE_DIR, EX_OK, EX_USAGE, EX_NOINPUT, EX_SOFTWARE
 from src.contracts.asset_storage import AssetDescriptor, AssetStorageInterface
 from src.contracts.events import EventDispatcherInterface
+from src.contracts.secret_provider import SecretProviderInterface
 from src.core.companion import write_companion_file, parse_companion_metadata
 from src.core.scanner import scan_markdown_files
 from src.core.io_stream import read_frontmatter_streaming
@@ -48,6 +49,8 @@ def run_asset_push(
     title: Optional[str] = None,
     owner: Optional[str] = None,
     backend: Optional[str] = None,
+    cloud_auth: Optional[str] = None,
+    secret_provider: Optional[SecretProviderInterface] = None,
     dispatcher: Optional[EventDispatcherInterface] = None,
     storage: Optional[AssetStorageInterface] = None,
     base_dir: Optional[Path] = None,
@@ -63,7 +66,7 @@ def run_asset_push(
         }
 
     key = remote_key or f"assets/{src_path.name}"
-    client = storage or create_asset_storage(backend)
+    client = storage or create_asset_storage(backend=backend, auth_mode=cloud_auth, secret_provider=secret_provider)
     desc = client.upload(src_path, key)
 
     if dispatcher:
@@ -90,11 +93,13 @@ def run_asset_pull(
     remote_key: str,
     target_path: Optional[str] = None,
     backend: Optional[str] = None,
+    cloud_auth: Optional[str] = None,
+    secret_provider: Optional[SecretProviderInterface] = None,
     dispatcher: Optional[EventDispatcherInterface] = None,
     storage: Optional[AssetStorageInterface] = None,
 ) -> Tuple[int, Dict[str, Any]]:
     """Download remote asset on-demand and verify its checksum."""
-    client = storage or create_asset_storage(backend)
+    client = storage or create_asset_storage(backend=backend, auth_mode=cloud_auth, secret_provider=secret_provider)
     dest = Path(target_path) if target_path else Path("storage/cache") / Path(remote_key).name
     dest = dest.resolve()
 
@@ -130,11 +135,13 @@ def run_asset_pull(
 def run_asset_check(
     remote_key: str,
     backend: Optional[str] = None,
+    cloud_auth: Optional[str] = None,
+    secret_provider: Optional[SecretProviderInterface] = None,
     dispatcher: Optional[EventDispatcherInterface] = None,
     storage: Optional[AssetStorageInterface] = None,
 ) -> Tuple[int, Dict[str, Any]]:
     """Check existence of an asset in storage backend without downloading blob."""
-    client = storage or create_asset_storage(backend)
+    client = storage or create_asset_storage(backend=backend, auth_mode=cloud_auth, secret_provider=secret_provider)
     exists = client.exists(remote_key)
 
     if dispatcher:
@@ -154,11 +161,13 @@ def run_asset_list(
     tier: str = "local",
     base_dir: Optional[Path] = None,
     backend: Optional[str] = None,
+    cloud_auth: Optional[str] = None,
+    secret_provider: Optional[SecretProviderInterface] = None,
     storage: Optional[AssetStorageInterface] = None,
 ) -> Tuple[int, Dict[str, Any]]:
     """Discover assets via companion documents across local and cloud tiers."""
     scan_dir = base_dir or KNOWLEDGE_DIR
-    client = (storage or create_asset_storage(backend)) if tier in ("cloud", "all") else None
+    client = (storage or create_asset_storage(backend=backend, auth_mode=cloud_auth, secret_provider=secret_provider)) if tier in ("cloud", "all") else None
     items: List[Dict[str, Any]] = []
 
     for doc in scan_markdown_files(scan_dir):
