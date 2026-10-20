@@ -61,3 +61,69 @@ python3 -m unittest discover -s tests -v
 ./bin/gx run --dry-run -- python3 --version
 ```
 
+---
+
+## 5. Agent Infrastructure Directory (`.agents/`)
+
+On-demand skill library and stop-hook gate for coding agents:
+
+```text
+.agents/
+├── hooks.json                    # AGY stop-hook: runs pre_stop.sh before agent stops
+├── hooks/pre_stop.sh             # 4-gate verification gauntlet (tests + SRP + mocks + doctor)
+└── skills/
+    ├── gnosidex-doctor/          # gx doctor audit workflow & repair loop
+    ├── gnosidex-knowledge-author/ # Frontmatter schema, naming conventions, link integrity
+    └── gnosidex-downstream-setup/ # Downstream specialization & upstream sync protocol
+```
+
+Read the relevant `SKILL.md` before performing specialized tasks:
+- Health audits & error repair → `.agents/skills/gnosidex-doctor/SKILL.md`
+- Authoring knowledge documents → `.agents/skills/gnosidex-knowledge-author/SKILL.md`
+- Onboarding a downstream organization → `.agents/skills/gnosidex-downstream-setup/SKILL.md`
+
+---
+
+## 6. Operational Mode (`IS_STARTER_KIT`)
+
+`config/app.py` carries a flag that governs agent behavior:
+
+| Flag Value | Context | Agent Scope |
+|---|---|---|
+| `IS_STARTER_KIT = True` | **Upstream** (this repo) | Engine maintenance, release checks active (`gx doctor --check-release`) |
+| `IS_STARTER_KIT = False` | **Downstream** (after `gx init`) | Content-only; engine releases, git tags, and `docs/RELEASING.md` suppressed |
+
+Downstream agents **MUST NOT** bump engine versions or create git release tags.
+All downstream changes are content-only (`knowledge/`, domain docs, GEMINI.md).
+
+---
+
+## 7. Downstream GEMINI.md Template
+
+After running `gx init`, downstream organizations **MUST** enrich `GEMINI.md` with
+domain-specific sections. Minimum required sections:
+
+```markdown
+## Identity & User Detection SOP
+How agents detect the active user at session start.
+
+## Domain Business Logic
+Core formulas, thresholds, and rules specific to this organization.
+Reference authoritative data sources — never guess relational structure.
+
+## Tooling Stack Mandates
+- Document engine (e.g., Typst for print, Markdown for web)
+- Automation engine (e.g., Windmill for scheduled ETL)
+- Forbidden alternatives and why
+
+## Anti-Assumption Rules
+Explicit prohibitions. What requires user confirmation before generating output.
+
+## Content-Only Scope
+Confirmation that IS_STARTER_KIT = False is active and release mechanics are suppressed.
+Upstream sync protocol: git fetch upstream main && git merge --no-commit upstream/main
+```
+
+> See `.agents/skills/gnosidex-downstream-setup/SKILL.md` for the full onboarding workflow.
+
+

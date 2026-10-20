@@ -113,7 +113,50 @@ When maintaining the open-source Gnosidex engine (`src/`, `bin/gx`, `config/`):
 
 ---
 
-## 5. The Verification Gauntlet (Evidence-First Doctrine)
+## 5. Agent Infrastructure Directory (`.agents/`)
+
+The `.agents/` directory provides the on-demand skill library and stop-hook gate for coding agents:
+
+```text
+.agents/
+├── hooks.json                          # AGY stop-hook configuration (auto-runs pre_stop.sh)
+├── hooks/
+│   └── pre_stop.sh                     # 4-gate gauntlet executed before agent may stop
+└── skills/
+    ├── gnosidex-doctor/
+    │   └── SKILL.md                    # gx doctor audit, exit code interpretation & repair loop
+    ├── gnosidex-knowledge-author/
+    │   └── SKILL.md                    # Frontmatter schema, naming conventions, link integrity
+    └── gnosidex-downstream-setup/
+        └── SKILL.md                    # Downstream specialization, upstream sync, anti-poisoning
+```
+
+### When to Load Each Skill
+
+| Situation | Skill to Load |
+|---|---|
+| Verifying repository health / resolving errors | `gnosidex-doctor` |
+| Authoring, scaffolding, or auditing knowledge documents | `gnosidex-knowledge-author` |
+| Onboarding a new downstream organization | `gnosidex-downstream-setup` |
+
+### Adding Downstream-Specific Skills
+
+After `gx init` specializes the repository, **downstream agents** may add their own skills under `.agents/skills/`:
+
+```bash
+mkdir -p .agents/skills/my-domain-skill
+# Write .agents/skills/my-domain-skill/SKILL.md with YAML frontmatter:
+# ---
+# name: my-domain-skill
+# description: "What this skill does and when to activate it."
+# ---
+```
+
+Skills are **never merged back upstream** — they belong exclusively to the downstream knowledge base.
+
+---
+
+## 6. The Verification Gauntlet (Evidence-First Doctrine)
 
 Before declaring any coding task complete or committing changes, coding agents **MUST** execute and review concrete evidence from the 4 automated gates:
 

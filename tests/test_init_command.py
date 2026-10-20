@@ -122,6 +122,9 @@ class TestInitCommand(unittest.TestCase):
         self.assertEqual(len(dispatched_events), 1)
         self.assertEqual(dispatched_events[0].payload["name"], "BankData-KB")
 
+        # Verify githooks_activated is present in payload
+        self.assertIn("githooks_activated", payload)
+
     def test_init_cli_stream_purity_on_json(self):
         res = subprocess.run(
             [sys.executable, str(CLI_BIN), "init", "--dry-run", "--json"],

@@ -59,6 +59,18 @@ def _prune_maintainer_docs(root_dir: Path, dry_run: bool) -> List[str]:
     return pruned
 
 
+def _activate_githooks(root_dir: Path, dry_run: bool) -> bool:
+    """Wire .githooks/ as the active git hooks directory for downstream enforcement."""
+    githooks_dir = root_dir / ".githooks"
+    pre_commit = githooks_dir / "pre-commit"
+    if not githooks_dir.exists() or not pre_commit.exists():
+        return False
+    if not dry_run:
+        pre_commit.chmod(pre_commit.stat().st_mode | 0o111)
+        os.system(f"git -C {root_dir} config core.hooksPath .githooks 2>/dev/null")
+    return True
+
+
 def _prune_sample_documents(root_dir: Path, dry_run: bool) -> List[str]:
     """Remove boilerplate sample documents upon specialization."""
     samples = [
@@ -138,6 +150,7 @@ def run_init(
     pruned_files = _prune_sample_documents(base_dir, dry_run) if clean_samples else []
     pruned_maintainer = _prune_maintainer_docs(base_dir, dry_run)
     notice_cleaned = _clean_readme_specialization(base_dir, final_name, final_desc, dry_run) if clean_notice else False
+    hooks_activated = _activate_githooks(base_dir, dry_run)
 
     if dispatcher and not dry_run:
         dispatcher.dispatch(
@@ -161,4 +174,5 @@ def run_init(
         "samples_pruned": pruned_files,
         "maintainer_docs_pruned": pruned_maintainer,
         "specialization_notice_cleaned": notice_cleaned,
+        "githooks_activated": hooks_activated,
     }

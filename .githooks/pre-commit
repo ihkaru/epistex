@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# ============================================================
+# Gnosidex Pre-Commit Hook (.githooks/pre-commit)
+# Enforces:
+#   1. Python file length limit (<= 300 lines per file)
+#   2. No RELEASING.md in staged files (downstream anti-poison guard)
+# ============================================================
+set -euo pipefail
+
+LIMIT=300
+ERRORS=0
+
+# ── Guard 1: Python file length ───────────────────────────
+while IFS= read -r -d '' file; do
+  if [ -f "$file" ]; then
+    lines=$(wc -l < "$file")
+    if [ "$lines" -gt "$LIMIT" ]; then
+      echo "[PRE-COMMIT FAIL] $file: $lines lines exceeds ${LIMIT}-line SRP limit."
+      echo "  → Decompose into smaller modules before committing."
+      ERRORS=$((ERRORS + 1))
+    fi
+  fi
+done < <(git diff --cached --name-only -z | grep -z '\.py$' || true)
+
+# ── Guard 2: No RELEASING.md (downstream anti-poisoning) ─
+if git diff --cached --name-only | grep -q "RELEASING.md"; then
+  echo "[PRE-COMMIT FAIL] RELEASING.md should not be present in downstream repositories."
+  echo "  → This file is for upstream maintainers only. Run: gx init to prune it."
+  ERRORS=$((ERRORS + 1))
+fi
+
+if [ "$ERRORS" -gt 0 ]; then
+  echo ""
+  echo "  $ERRORS pre-commit guard(s) failed. Fix the issues above and retry git commit."
+  exit 1
+fi
+
+exit 0

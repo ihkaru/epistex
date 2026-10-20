@@ -1,0 +1,12 @@
+{
+  "gnosidex-verification-gate": {
+    "enabled": true,
+    "Stop": [
+      {
+        "type": "command",
+        "command": "bash .agents/hooks/pre_stop.sh",
+        "timeout": 60
+      }
+    ]
+  }
+}
