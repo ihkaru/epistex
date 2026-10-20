@@ -11,7 +11,7 @@ LOGS_DIR = STORAGE_DIR / "logs"
 
 # Application Metadata
 APP_NAME = "gnosidex"
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.1.0"
 APP_DESCRIPTION = "Gnosidex: Enterprise Git-Based Knowledge Base & Hermetic Execution Starter Kit"
 
 # Directories to prune during scanner traversal (O(V) pruning)
