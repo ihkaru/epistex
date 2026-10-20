@@ -90,43 +90,26 @@ When a coding agent is instructed to adopt, initialize, or specialize Gnosidex f
 
 ---
 
-## 4. Agent Versioning & Git Lifecycle Protocol (Laravel Model)
+## 4. Operational Scope & Anti-Poisoning Doctrine
 
-Coding agents modifying or contributing to Gnosidex or its downstream instances **MUST** adhere to the following Laravel-inspired version control protocol:
+To guarantee that coding agents remain strictly aligned with the operational context and never confuse **Downstream Content Maintenance** with **Upstream Framework Releasing**, agents **MUST** respect the repository mode defined in `config/app.py`:
 
-```text
-  [1.x Branch] ────────► Target for bugfixes, non-breaking features, and patch PRs
-       ▲
-       │
-  [feat/* or fix/*] ───► Short-lived branches created from 1.x
-```
+### A. Downstream Operational Mode (`IS_STARTER_KIT = False`)
+When Gnosidex has been specialized for an organization (e.g. via `gx init`):
+1. **Content-Only Scope**: The agent's responsibility is exclusively authoring, updating, and auditing knowledge documents (`knowledge/`), running hermetic tasks (`gx run`), and verifying health (`gx doctor`).
+2. **Zero-Release Invariant**: Autonomous agents **MUST NOT** bump engine versions, create git release tags, or generate engine release notes for content updates. Engine release triggers are completely deactivated.
+3. **Upstream Synchronization**: Downstream repositories pull framework and CLI enhancements from upstream without touching internal documents:
+   ```bash
+   git remote add upstream https://github.com/ihkaru/gnosidex.git
+   git fetch upstream 1.x
+   git merge --no-commit upstream/1.x
+   ```
 
-### A. Branching Doctrine
-- **Active Series Branch (`1.x`)**: All maintenance, bugfixes, and backward-compatible additive features **MUST** target the `1.x` branch.
-- **Production Baseline (`main`)**: Serves as the stable release trunk. Merges to `main` occur upon validated release tagging.
-- **Branch Naming Conventions**:
-  - `feat/<short-description>` for new capabilities (e.g. `feat/sqlite-audit-sink`).
-  - `fix/<short-description>` for defect corrections (e.g. `fix/scandir-symlink-loop`).
-  - `chore/<short-description>` for dependency or governance updates.
-
-### B. Strict Semantic Versioning 2.0.0 (`vMAJOR.MINOR.PATCH`)
-- **`PATCH` (`1.0.x`)**:
-  - Bug fixes, Big-O algorithmic optimizations, documentation corrections.
-  - **Hard Invariant**: 100% zero breaking changes to existing frontmatter schemas or CLI flags.
-- **`MINOR` (`1.x.0`)**:
-  - Additive CLI commands, new document templates in `config/schema.py`, new storage/secret providers.
-  - **Hard Invariant**: Backward-compatible with existing companion documents and configuration files.
-- **`MAJOR` (`2.0.0`)**:
-  - Fundamental architectural shifts or deprecation cleanups.
-  - **Agent Rule**: Autonomous agents **MUST NOT** perform major version bumps without explicit user instruction.
-
-### C. Downstream Upstream Synchronization
-When working in a downstream specialized repository, agents can pull core engine updates from upstream Gnosidex safely:
-```bash
-git fetch upstream 1.x
-git merge --no-commit upstream/1.x
-```
-Because custom business documents reside in `knowledge/` and core engine components reside in `src/`, upgrades merge cleanly.
+### B. Upstream Starter Kit Mode (`IS_STARTER_KIT = True`)
+When maintaining the open-source Gnosidex engine (`src/`, `bin/gx`, `config/`):
+1. **Automated Release Verification**: Run `./bin/gx doctor --check-release --json` to detect whether unreleased code commits warrant a Patch or Minor release.
+2. **Release Governance**: Follow the comprehensive state machine and pre-flight gates documented strictly in [`docs/RELEASING.md`](docs/RELEASING.md).
+3. **Anti-Poisoning Pruning**: When `gx init` is executed, [`docs/RELEASING.md`](docs/RELEASING.md) is automatically pruned so downstream agents never encounter engine release instructions.
 
 ---
 

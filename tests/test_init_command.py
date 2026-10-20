@@ -22,10 +22,14 @@ class TestInitCommand(unittest.TestCase):
         # Scaffold mock repository structure
         (self.root / "config").mkdir(parents=True)
         (self.root / "config" / "app.py").write_text(
-            'APP_NAME = "gnosidex"\nAPP_DESCRIPTION = "Starter Kit"\n',
+            'APP_NAME = "gnosidex"\nAPP_DESCRIPTION = "Starter Kit"\nIS_STARTER_KIT = True\n',
             encoding="utf-8",
         )
         (self.root / ".env.example").write_text("SAMPLE_KEY=sample_val\n", encoding="utf-8")
+
+        docs_dir = self.root / "docs"
+        docs_dir.mkdir(parents=True)
+        (docs_dir / "RELEASING.md").write_text("# Upstream Releasing Protocol\n", encoding="utf-8")
 
         adr_dir = self.root / "knowledge" / "engineering" / "adr"
         adr_dir.mkdir(parents=True)
@@ -95,14 +99,19 @@ class TestInitCommand(unittest.TestCase):
         app_content = (self.root / "config" / "app.py").read_text(encoding="utf-8")
         self.assertIn('APP_NAME = "BankData-KB"', app_content)
         self.assertIn('APP_DESCRIPTION = "Core Banking Knowledge Base"', app_content)
+        self.assertIn('IS_STARTER_KIT = False', app_content)
+        self.assertFalse(payload["starter_kit_mode"])
 
         # Verify .env copied
         self.assertTrue((self.root / ".env").exists())
         self.assertIn("SAMPLE_KEY=sample_val", (self.root / ".env").read_text(encoding="utf-8"))
 
-        # Verify samples pruned
+        # Verify samples and maintainer docs pruned
         adr_file = self.root / "knowledge" / "engineering" / "adr" / "ADR-001-event-driven-architecture.md"
         self.assertFalse(adr_file.exists())
+        releasing_file = self.root / "docs" / "RELEASING.md"
+        self.assertFalse(releasing_file.exists())
+        self.assertIn("docs/RELEASING.md", payload["maintainer_docs_pruned"])
 
         # Verify README notice replaced
         readme_content = (self.root / "README.md").read_text(encoding="utf-8")

@@ -18,7 +18,7 @@ from src.events.domain_events import RepositoryInitializedEvent
 
 
 def _update_app_config(root_dir: Path, name: str, description: str, dry_run: bool) -> bool:
-    """Update APP_NAME and APP_DESCRIPTION inside config/app.py."""
+    """Update APP_NAME, APP_DESCRIPTION, and deactivate starter kit mode inside config/app.py."""
     config_file = root_dir / "config" / "app.py"
     if not config_file.exists():
         return False
@@ -26,6 +26,7 @@ def _update_app_config(root_dir: Path, name: str, description: str, dry_run: boo
     content = config_file.read_text(encoding="utf-8")
     content = re.sub(r'APP_NAME = ".*?"', f'APP_NAME = "{name}"', content)
     content = re.sub(r'APP_DESCRIPTION = ".*?"', f'APP_DESCRIPTION = "{description}"', content)
+    content = re.sub(r'IS_STARTER_KIT = True', 'IS_STARTER_KIT = False', content)
 
     if not dry_run:
         atomic_write_text(config_file, content)
@@ -42,6 +43,20 @@ def _ensure_env_file(root_dir: Path, dry_run: bool) -> bool:
     if not dry_run:
         atomic_write_text(env_file, example_file.read_text(encoding="utf-8"))
     return True
+
+
+def _prune_maintainer_docs(root_dir: Path, dry_run: bool) -> List[str]:
+    """Remove upstream starter kit maintainer release protocols to prevent prompt poisoning."""
+    maintainer_docs = [
+        root_dir / "docs" / "RELEASING.md",
+    ]
+    pruned = []
+    for file_path in maintainer_docs:
+        if file_path.exists():
+            pruned.append(str(file_path.relative_to(root_dir)))
+            if not dry_run:
+                file_path.unlink()
+    return pruned
 
 
 def _prune_sample_documents(root_dir: Path, dry_run: bool) -> List[str]:
@@ -121,6 +136,7 @@ def run_init(
     _update_app_config(base_dir, final_name, final_desc, dry_run)
     env_created = _ensure_env_file(base_dir, dry_run)
     pruned_files = _prune_sample_documents(base_dir, dry_run) if clean_samples else []
+    pruned_maintainer = _prune_maintainer_docs(base_dir, dry_run)
     notice_cleaned = _clean_readme_specialization(base_dir, final_name, final_desc, dry_run) if clean_notice else False
 
     if dispatcher and not dry_run:
@@ -139,8 +155,10 @@ def run_init(
         "name": final_name,
         "description": final_desc,
         "owner": final_owner,
+        "starter_kit_mode": False,
         "dry_run": dry_run,
         "env_file_created": env_created,
         "samples_pruned": pruned_files,
+        "maintainer_docs_pruned": pruned_maintainer,
         "specialization_notice_cleaned": notice_cleaned,
     }

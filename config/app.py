@@ -14,6 +14,11 @@ APP_NAME = "gnosidex"
 APP_VERSION = "1.1.0"
 APP_DESCRIPTION = "Gnosidex: Enterprise Git-Based Knowledge Base & Hermetic Execution Starter Kit"
 
+# Operational Mode
+# True: Upstream starter kit development mode (engine maintenance, release checks active)
+# False: Downstream specialized knowledge base mode (content only, release checks disabled to prevent prompt poisoning)
+IS_STARTER_KIT = True
+
 # Directories to prune during scanner traversal (O(V) pruning)
 DEFAULT_IGNORED_DIRS = {
     ".git",

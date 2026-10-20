@@ -3,10 +3,12 @@
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
-from config.app import ROOT_DIR, KNOWLEDGE_DIR, EX_OK, EX_DATAERR
+from config.app import ROOT_DIR, KNOWLEDGE_DIR, EX_OK, EX_DATAERR, IS_STARTER_KIT
 from src.contracts.asset_storage import AssetStorageInterface
 from src.contracts.events import EventDispatcherInterface
+from src.contracts.secret_provider import SecretProviderInterface
 from src.core.companion import parse_companion_metadata
+from src.core.release_checker import audit_release_readiness
 from src.core.scanner import scan_markdown_files, build_inverted_file_index
 from src.core.io_stream import read_frontmatter_streaming
 from src.core.schema_validator import SchemaValidator
@@ -106,6 +108,7 @@ def run_doctor(
     base_dir: Path = KNOWLEDGE_DIR,
     dispatcher: Optional[EventDispatcherInterface] = None,
     check_assets: bool = False,
+    check_release: bool = False,
     cloud_auth: Optional[str] = None,
     secret_provider: Optional[SecretProviderInterface] = None,
     asset_storage: Optional[AssetStorageInterface] = None,
@@ -142,4 +145,6 @@ def run_doctor(
         "secret_leaks": leak_issues,
         "asset_issues": asset_issues,
     }
+    if check_release:
+        result["release_readiness"] = audit_release_readiness(ROOT_DIR, IS_STARTER_KIT)
     return exit_code, result

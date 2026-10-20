@@ -79,6 +79,7 @@ def _add_core_subparsers(subparsers) -> None:
     doc_p = subparsers.add_parser("doctor", help="Audit schema, dead links, line limits, and secret leaks")
     add_common_flags(doc_p)
     doc_p.add_argument("--check-assets", action="store_true", help="Audit cloud assets existence in companions")
+    doc_p.add_argument("--check-release", action="store_true", help="Audit git commits to determine if an engine release is required")
     doc_p.add_argument("--cloud-auth", choices=["env", "hermetic", "auto"], help="Cloud credentials source")
 
     map_p = subparsers.add_parser("map", help="Display token-budget bounded repository tree")
@@ -178,6 +179,7 @@ def _dispatch_admin_command(args, dispatcher, is_json: bool) -> Optional[int]:
         code, payload = run_doctor(
             dispatcher=dispatcher,
             check_assets=args.check_assets,
+            check_release=getattr(args, "check_release", False),
             cloud_auth=getattr(args, "cloud_auth", None),
         )
         output_result(payload, is_json)
