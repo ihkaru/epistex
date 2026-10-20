@@ -1,12 +1,39 @@
-# Gnosidex
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/brand/gnosidex-wordmark-light.svg">
+    <img src="docs/images/brand/gnosidex-wordmark.svg" alt="Gnosidex" height="64">
+  </picture>
+</p>
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Zero-Dependency Core](https://img.shields.io/badge/dependencies-zero_runtime-success.svg)]()
-[![Code Architecture](https://img.shields.io/badge/architecture-SOLID%20%7C%20EDA%20%7C%20DIP-purple.svg)]()
-[![Release Cadence](https://img.shields.io/badge/versioning-SemVer%202.0%20(Laravel%20Model)-blue.svg)]()
+<p align="center">
+  <strong>Zero Syntax for Humans. Zero Ambiguity for AI Agents.</strong><br>
+  <em>The Enterprise Git-Based Knowledge Base Starter Kit with Hermetic Secret Injection and Pure Machine Contracts.</em>
+</p>
 
-**Gnosidex** (from *Gnosis* [insight/knowledge] + *Codex* [structured index]) is a high-performance, enterprise-ready, plug-and-play **Git-based Knowledge Base Starter Kit** engineered with an **Agent-First Tool Contract**, **Event-Driven Architecture (EDA)**, **Interface-First Design (SOLID)**, and **Hermetic Code Execution with Runtime Secret Injection** (first-party support for Infisical and zero vendor lock-in).
+<p align="center">
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python 3.10+"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <img src="https://img.shields.io/badge/dependencies-zero_runtime-success.svg" alt="Zero-Dependency Core">
+  <img src="https://img.shields.io/badge/architecture-SOLID%20%7C%20EDA%20%7C%20DIP-purple.svg" alt="Code Architecture">
+  <a href="https://github.com/ihkaru/gnosidex/releases"><img src="https://img.shields.io/badge/release-v1.2.0%20(Laravel%20Model)-blue.svg" alt="Latest Release"></a>
+</p>
+
+---
+
+## 🧠 The Agent-Mediated Experience
+
+> [!TIP]
+> **No CLI Syntax to Memorize**: You never need to remember complex commands, flags, or configuration paths. Simply speak to your AI coding agent (Antigravity, Claude Code, Cursor, Codex) in natural language. The agent consults its embedded skills in `.agents/skills/` and translates your intent into deterministic `gx` CLI calls behind the scenes.
+
+| What You Say to Your AI Agent (Natural Intent) | What The Agent Runs Under the Hood | Outcome Delivered to You |
+|:---|:---|:---|
+| *"Specialize this repository for our team and prune sample docs"* | `./bin/gx init --name "MyOrg" --clean-samples -y --json` | Repositories specialized, metadata configured, starter-kit release triggers deactivated. |
+| *"Audit our knowledge base for broken links, missing frontmatter, or secret leaks"* | `./bin/gx doctor --check-assets --json` | Complete health audit in < 50ms; agent summarizes findings and self-heals broken links. |
+| *"What upcoming deadlines and milestones are approaching?"* | `./bin/gx schedule --limit 10 --json` | Nearest milestones queried via $O(M \log k)$ bounded min-heap in < 100 tokens. |
+| *"Draft a new Architecture Decision Record for our PostgreSQL migration"* | `./bin/gx create knowledge/engineering/adr/ADR-002-postgres.md --category architecture-decision --json` | Scaffolds standard document with valid YAML frontmatter and atomic writes (`os.replace`). |
+| *"Run our data sync script hermetically without saving credentials to disk"* | `./bin/gx run -- python3 scripts/sync.py` | Injects in-memory secrets directly from Infisical vault; zero disk leaks, zero process contamination. |
+
+---
 
 > [!IMPORTANT]
 > **Starter Kit Specialization Notice (Replace Once Adopted)**:
@@ -87,14 +114,21 @@ When tailoring this starter kit to your organization's specific requirements, ex
 
 ```text
 gnosidex/
+├── .agents/                         # On-demand skill library & AGY stop-hook
+│   ├── hooks.json                   # Automated pre-stop verification hook
+│   ├── hooks/pre_stop.sh            # 4-gate gauntlet (tests + SRP + mocks + doctor)
+│   └── skills/                      # Doctor, Knowledge-Author, Downstream-Setup
+├── .githooks/                       # Git lifecycle hooks
+│   └── pre-commit                   # 300-line SRP guard & anti-poisoning check
 ├── bin/
 │   ├── gx                           # Primary executable CLI entrypoint (chmod +x)
 │   ├── gnosidex                     # Canonical alias symlink (chmod +x)
 │   └── kb                           # Legacy transition symlink (chmod +x)
 ├── config/                          # Convention-over-configuration settings
-│   ├── app.py                       # App metadata, paths, POSIX exit codes
+│   ├── app.py                       # App metadata, paths, IS_STARTER_KIT flag
 │   ├── schema.py                    # Frontmatter schema rules & templates
-│   └── vault.py                     # Secret provider & hermetic runner config
+│   ├── vault.py                     # Secret provider & hermetic runner config
+│   └── cloud.py                     # S3 asset storage & auth posture config
 ├── knowledge/                       # Domain-driven knowledge base documents
 │   ├── engineering/
 │   │   ├── adr/                     # Architecture Decision Records ([ADR-001]-...)
@@ -103,6 +137,8 @@ gnosidex/
 │   │   └── playbooks/               # Incident & triage playbooks ([PLAY-001]-...)
 │   └── activities/                  # Structured operational activities & milestones
 │       └── quarterly-audit/2026-Q4/
+├── scripts/
+│   └── release.sh                   # 1-step deterministic release automation engine
 ├── src/                             # SOLID, Interface-First Python package
 │   ├── contracts/                   # Abstract interfaces (Events, Secrets, Runners, Validator)
 │   ├── core/                        # High-performance zero-dep algorithmic core
@@ -110,20 +146,24 @@ gnosidex/
 │   │   ├── io_stream.py             # Atomic writes (os.replace) & streaming reader
 │   │   ├── scanner.py               # Pruned scandir iterator & inverted index
 │   │   ├── yaml_parser.py           # Safe restricted YAML parser
+│   │   ├── release_checker.py       # Deterministic SemVer release-readiness probe
 │   │   └── schema_validator.py      # Frontmatter schema validator
 │   ├── events/                      # Event dispatcher & typed domain events
 │   ├── providers/                   # Concrete provider implementations (DI ready)
 │   │   ├── secrets/                 # InfisicalProvider, EnvSecretProvider, MemorySecretProvider
+│   │   ├── storage/                 # LocalAssetStorageProvider, S3AssetStorageProvider
 │   │   └── runner/                  # HermeticCodeRunner, DryCodeRunner
 │   ├── listeners/                   # AuditEventListener, TelemetryEventListener
-│   └── commands/                    # CLI commands (doctor, map, create, schedule, run, secrets)
+│   └── commands/                    # CLI commands (doctor, map, create, schedule, run, asset, init)
 ├── storage/                         # Local storage & ephemeral artifacts
 │   ├── cache/
 │   └── logs/                        # Structured JSONL audit logs
-├── tests/                           # Complete test suite (23 tests, zero mock leakage)
+├── tests/                           # Complete test suite (41 tests, zero mock leakage)
 ├── AGENTS.md                        # Agent-First Tool Contract & operational protocols
+├── CONTRIBUTING.md                  # Laravel-aligned open-source contribution guidelines
 ├── DESIGN.md                        # Architecture, SOLID principles & Big-O analysis
 ├── GEMINI.md                        # Self-contained repository governance manual
+├── SECURITY.md                      # Responsible vulnerability disclosure policy
 └── README.md                        # Root manifest and quickstart guide
 ```
 
