@@ -11,13 +11,22 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-BUMP_TYPE="${1:-}"
+BUMP_TYPE=""
 DRY_RUN=false
 
 for arg in "$@"; do
-  if [ "$arg" = "--dry-run" ]; then
-    DRY_RUN=true
-  fi
+  case "$arg" in
+    --dry-run)
+      DRY_RUN=true
+      ;;
+    patch|minor|major)
+      BUMP_TYPE="$arg"
+      ;;
+    *)
+      echo "❌ Error: Unrecognized argument '$arg'. Allowed: patch, minor, major, --dry-run."
+      exit 1
+      ;;
+  esac
 done
 
 # ------------------------------------------------------------------------------
@@ -33,8 +42,8 @@ if [ "$IS_STARTER_KIT" != "true" ]; then
   exit 1
 fi
 
-# Check git status
-if [ -n "$(git status --porcelain)" ]; then
+# Check git status (enforced on actual release)
+if [ "$DRY_RUN" != true ] && [ -n "$(git status --porcelain)" ]; then
   echo "❌ Error: Working tree has uncommitted changes. Commit or stash them first."
   git status --short
   exit 1
