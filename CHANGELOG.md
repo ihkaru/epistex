@@ -5,6 +5,26 @@ All notable changes to **Gnosidex** will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) following the [Laravel Release Model](https://laravel.com/docs/releases).
 
+## [v1.2.0] - 2026-10-20
+
+### Added
+- **Agent Infrastructure Directory (`.agents/`)**: Introduced on-demand skill library and stop-hook gate for coding agents:
+  - `.agents/hooks.json` — AGY stop-hook configuration wiring `pre_stop.sh` before agent may stop.
+  - `.agents/hooks/pre_stop.sh` — 4-gate verification gauntlet (unit tests + SRP analyzer + zero-mock detector + `gx doctor`) executed automatically before any agent turn completes.
+  - `.agents/skills/gnosidex-doctor/SKILL.md` — Health audit workflow with exit code interpretation, self-healing repair loop, and asset verification protocol.
+  - `.agents/skills/gnosidex-knowledge-author/SKILL.md` — Frontmatter schema, naming conventions, link integrity rules, and `gx create` scaffold patterns.
+  - `.agents/skills/gnosidex-downstream-setup/SKILL.md` — Complete downstream onboarding guide: `gx init` flow, GEMINI.md domain SOP template, upstream sync protocol, and anti-poisoning invariants.
+- **Pre-Commit Hook (`.githooks/pre-commit`)**: Enforces Python 300-line SRP limit and blocks `RELEASING.md` commits in downstream repos (anti-poisoning guard). Auto-activated via `git config core.hooksPath .githooks` on `gx init`.
+- **Downstream GEMINI.md Template (§7 in `GEMINI.md`)**: Documents required sections for downstream organizations to fill after `gx init` — Identity SOP, Domain Business Logic, Tooling Stack Mandates, Anti-Assumption Rules, Content-Only Scope declaration.
+
+### Changed
+- **`AGENTS.md` §5** (new): Agent infrastructure routing table documenting when to load each skill.
+- **`GEMINI.md` §5–7** (new): `.agents/` directory reference, `IS_STARTER_KIT` mode comparison table, and downstream GEMINI.md template.
+- **`cmd_init.py`**: Added `_activate_githooks()` — auto-wires `.githooks/` as `core.hooksPath` on `gx init`; adds `githooks_activated` field to JSON payload.
+- **`test_init_command.py`**: Added assertion for `githooks_activated` key in init payload.
+
+---
+
 ## [v1.1.0] - 2026-10-20
 
 ### Added
