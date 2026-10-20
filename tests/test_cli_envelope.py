@@ -6,7 +6,7 @@ import sys
 import unittest
 from pathlib import Path
 
-CLI_BIN = Path(__file__).resolve().parent.parent / "bin" / "kb"
+CLI_BIN = Path(__file__).resolve().parent.parent / "bin" / "gx"
 
 
 class TestCLIEnvelope(unittest.TestCase):
@@ -45,7 +45,7 @@ class TestCLIEnvelope(unittest.TestCase):
             text=True,
         )
         self.assertEqual(res.returncode, 0)
-        self.assertIn("kb", res.stdout)
+        self.assertIn("gx", res.stdout)
 
 
 if __name__ == "__main__":

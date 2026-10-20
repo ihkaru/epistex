@@ -82,7 +82,7 @@ class FileNotFoundKBError(KBError):
     def to_envelope(self) -> Dict[str, Any]:
         envelope = super().to_envelope()
         envelope["file"] = self.path
-        envelope["fix_hint"] = "Verify the document path or run 'kb create' to scaffold it."
+        envelope["fix_hint"] = "Verify the document path or run 'gx create' to scaffold it."
         return envelope
 
 

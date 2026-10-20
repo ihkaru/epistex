@@ -21,7 +21,7 @@ This playbook triggers when an unexpected production anomaly or data integrity i
    - P3: Minor UI or formatting regression.
 2. **Execute Diagnostic Doctor**:
    ```bash
-   ./bin/kb doctor --json
+   ./bin/gx doctor --json
    ```
 3. **Verify Links & References**:
    Refer to operational runbooks in [RUN-001](../../engineering/runbooks/RUN-001-secret-injection-infisical.md).

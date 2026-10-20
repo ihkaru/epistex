@@ -27,7 +27,7 @@ When tailoring this starter kit to your organization's specific requirements, ex
   - Customize `ALLOWED_STATUSES` (e.g., `["draft", "in-review", "approved", "deprecated"]`).
   - Customize `ALLOWED_CATEGORIES` (e.g., adding `sop`, `data-dictionary`, `postmortem`, `rfc`).
   - Adjust `REQUIRED_FRONTMATTER_FIELDS` to enforce internal team governance.
-  - Tailor `DEFAULT_TEMPLATES` for your automated document scaffolding via `kb create`.
+  - Tailor `DEFAULT_TEMPLATES` for your automated document scaffolding via `gx create`.
 
 ### 3. Secret Vault & Cloud Storage Integration
 - **Environment Template**: Copy [`.env.example`](file:///root/projects/gnosidex/.env.example) to `.env` (`cp .env.example .env`).
@@ -41,12 +41,12 @@ When tailoring this starter kit to your organization's specific requirements, ex
 ### 4. Knowledge Domain Organization
 - **Prune Sample Documents**: Remove or replace initial boilerplate examples in [`knowledge/engineering/adr/`](file:///root/projects/gnosidex/knowledge/engineering/adr/) and [`knowledge/activities/`](file:///root/projects/gnosidex/knowledge/activities/).
 - **Establish Business Domains**: Create domain directories that map to your team's real operational boundaries (e.g. `knowledge/data-platform/`, `knowledge/governance/`, `knowledge/infrastructure/`).
-- **Scaffold New Documents**: Use `./bin/kb create <template> <path>` to generate new standard documents with atomic writes.
+- **Scaffold New Documents**: Use `./bin/gx create <template> <path>` to generate new standard documents with atomic writes.
 
 ### 5. Final Verification & Documentation Cleanup
 - Run the full verification gauntlet to confirm compliance with your customized schemas:
   ```bash
-  ./bin/kb doctor --check-assets --json
+  ./bin/gx doctor --check-assets --json
   ```
 - Once verified, remove or replace this **Specialization Checklist** section in `README.md` with your team's operational manual.
 
@@ -88,7 +88,9 @@ When tailoring this starter kit to your organization's specific requirements, ex
 ```text
 gnosidex/
 ├── bin/
-│   └── kb                           # Executable CLI runner (chmod +x)
+│   ├── gx                           # Primary executable CLI entrypoint (chmod +x)
+│   ├── gnosidex                     # Canonical alias symlink (chmod +x)
+│   └── kb                           # Legacy transition symlink (chmod +x)
 ├── config/                          # Convention-over-configuration settings
 │   ├── app.py                       # App metadata, paths, POSIX exit codes
 │   ├── schema.py                    # Frontmatter schema rules & templates
@@ -129,12 +131,12 @@ gnosidex/
 
 ## Quickstart & CLI Commands
 
-All commands can be invoked directly using `./bin/kb` without installation:
+All commands can be invoked directly using `./bin/gx` (or the `gnosidex` alias) without installation:
 
-### 1. Repository Health Audit (`kb doctor`)
+### 1. Repository Health Audit (`gx doctor`)
 Validates frontmatter schema compliance, relative link integrity, line limit caps, and secret leak sentinels:
 ```bash
-./bin/kb doctor --json
+./bin/gx doctor --json
 ```
 Output (STDOUT pure data):
 ```json
@@ -149,59 +151,59 @@ Output (STDOUT pure data):
 }
 ```
 
-### 2. Token-Efficient Repository Map (`kb map`)
+### 2. Token-Efficient Repository Map (`gx map`)
 Produces a bounded, token-efficient structural overview of all domains:
 ```bash
-./bin/kb map --depth 2 --compact --json
+./bin/gx map --depth 2 --compact --json
 ```
 
-### 3. Query Upcoming Schedules (`kb schedule`)
+### 3. Query Upcoming Schedules (`gx schedule`)
 Uses a bounded min-heap ($O(M \log k)$) to extract nearest deadlines:
 ```bash
-./bin/kb schedule --limit 5 --json
+./bin/gx schedule --limit 5 --json
 ```
 
-### 4. Hermetic Execution with Secret Injection (`kb run`)
+### 4. Hermetic Execution with Secret Injection (`gx run`)
 Executes a command in an isolated environment with secrets injected directly into process memory:
 ```bash
 # Preview execution in dry-run mode
-./bin/kb run --dry-run -- python3 -c "import os; print(os.environ)"
+./bin/gx run --dry-run -- python3 -c "import os; print(os.environ)"
 
 # Execute hermetically with Infisical secrets
-./bin/kb run -- python3 -c "import os; print('Injected keys:', len(os.environ))"
+./bin/gx run -- python3 -c "import os; print('Injected keys:', len(os.environ))"
 ```
 
-### 5. Inspect Secret Provider Status (`kb secrets`)
+### 5. Inspect Secret Provider Status (`gx secrets`)
 Inspects active secret provider connectivity and masks keys for safe diagnostics:
 ```bash
-./bin/kb secrets --json
+./bin/gx secrets --json
 ```
 
-### 6. Scaffold New Documents Atomically (`kb create`)
+### 6. Scaffold New Documents Atomically (`gx create`)
 Scaffolds documents from standard templates (`adr`, `runbook`, `activity`) using atomic writes:
 ```bash
-./bin/kb create adr engineering/adr/ADR-002-distributed-tracing.md --title "Distributed Tracing"
+./bin/gx create adr engineering/adr/ADR-002-distributed-tracing.md --title "Distributed Tracing"
 ```
 
-### 7. Cloud Asset Offloading & Tiered Hydration (`kb asset`)
+### 7. Cloud Asset Offloading & Tiered Hydration (`gx asset`)
 
 Prevent Git repository bloat by storing heavy binary assets (PDFs, images, datasets) in cloud/local storage while keeping lightweight companion markdown pointers in Git:
 
 ```bash
 # 1. Offload binary asset and generate Git companion markdown atomically
-./bin/kb asset push path/to/spec.pdf --key specs/network-topology.pdf --companion engineering/assets/network.md --title "Network Topology"
+./bin/gx asset push path/to/spec.pdf --key specs/network-topology.pdf --companion engineering/assets/network.md --title "Network Topology"
 
 # 2. Check remote asset existence without downloading full blob
-./bin/kb asset check specs/network-topology.pdf --json
+./bin/gx asset check specs/network-topology.pdf --json
 
 # 3. Discover assets across local and cloud tiers
-./bin/kb asset list --tier all --json
+./bin/gx asset list --tier all --json
 
 # 4. Download / hydrate asset on-demand and verify SHA-256
-./bin/kb asset pull specs/network-topology.pdf --target /tmp/restored-spec.pdf --json
+./bin/gx asset pull specs/network-topology.pdf --target /tmp/restored-spec.pdf --json
 
 # 5. Audit cloud assets in doctor
-./bin/kb doctor --check-assets --json
+./bin/gx doctor --check-assets --json
 ```
 
 #### Opt-In Cloud Storage & Flexible Authentication Modes
@@ -215,7 +217,7 @@ Cloud storage is **strictly opt-in** (`local` by default). When using an S3-comp
 
 Example hermetic upload with Infisical secrets:
 ```bash
-./bin/kb asset push report.pdf --key reports/q4.pdf --backend s3 --cloud-auth hermetic
+./bin/gx asset push report.pdf --key reports/q4.pdf --backend s3 --cloud-auth hermetic
 ```
 
 ---
