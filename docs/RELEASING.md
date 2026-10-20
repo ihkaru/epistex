@@ -85,9 +85,35 @@ detect-mocks .
 
 ---
 
-## 5. Release Execution Sequence
+## 5. Automated Release Execution (`scripts/release.sh`)
 
-Once all gates pass:
+To eliminate human error and ensure that git tagging, branch synchronization, and **GitHub Release publication** occur atomically, maintainers should use the release automation script:
+
+```bash
+# 1. Preview release without touching files or git:
+./scripts/release.sh --dry-run
+
+# 2. Execute automated release (patch, minor, or major):
+./scripts/release.sh patch   # or minor / major
+```
+
+The script automatically executes:
+1. Scope validation (`IS_STARTER_KIT == True`) and working tree cleanliness checks.
+2. Automated bump recommendation via `gx doctor --check-release`.
+3. The 4-gate pre-flight gauntlet (unit tests, SRP static analyzer, zero-mock detector, `gx doctor`).
+4. Version bumping in `config/app.py` and `pyproject.toml`.
+5. Release notes extraction from `CHANGELOG.md`.
+6. Committing the release bump to `main`.
+7. Fast-forwarding the active series branch `1.x` to `main`.
+8. Creating the annotated Git tag `vMAJOR.MINOR.PATCH`.
+9. Pushing `main`, `1.x`, and tags to GitHub.
+10. Creating or updating the official **GitHub Release** via `gh release create`.
+
+---
+
+## 6. Manual Release Sequence (Reference)
+
+If executing manually:
 
 1. **Bump Version**:
    - `config/app.py`: Update `APP_VERSION`.
@@ -100,7 +126,7 @@ Once all gates pass:
    git commit -m "chore(release): bump version to vMAJOR.MINOR.PATCH"
    git branch -f 1.x main
    ```
-4. **Tag & Publish**:
+4. **Tag & Publish to GitHub**:
    ```bash
    git tag -a vMAJOR.MINOR.PATCH -m "Release vMAJOR.MINOR.PATCH: <summary>"
    git push origin main 1.x --tags
