@@ -5,7 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 from config.vault import (
     INFISICAL_API_URL,
     INFISICAL_PROJECT_ID,
@@ -14,6 +14,23 @@ from config.vault import (
 )
 from src.contracts.secret_provider import SecretProviderInterface
 from .env_provider import EnvSecretProvider
+
+
+def parse_infisical_payload(data: Any) -> Dict[str, str]:
+    """Parse JSON payload from infisical export or secrets commands."""
+    if isinstance(data, dict):
+        return {str(k): str(v) for k, v in data.items()}
+    if isinstance(data, list):
+        parsed: Dict[str, str] = {}
+        for item in data:
+            if not isinstance(item, dict):
+                continue
+            k = item.get("key") or item.get("secretKey")
+            v = item.get("value") if "value" in item else item.get("secretValue", "")
+            if k:
+                parsed[str(k)] = str(v)
+        return parsed
+    return {}
 
 
 class InfisicalSecretProvider(SecretProviderInterface):
@@ -62,15 +79,7 @@ class InfisicalSecretProvider(SecretProviderInterface):
             )
             if res.returncode == 0 and res.stdout.strip():
                 data = json.loads(res.stdout)
-                # infisical export returns either {KEY: VAL} or [{"secretKey": k, "secretValue": v}]
-                if isinstance(data, dict):
-                    return {str(k): str(v) for k, v in data.items()}
-                if isinstance(data, list):
-                    return {
-                        str(item.get("secretKey")): str(item.get("secretValue", ""))
-                        for item in data
-                        if "secretKey" in item
-                    }
+                return parse_infisical_payload(data)
             sys.stderr.write(
                 f"[Infisical] Warning: CLI returned code {res.returncode}. Falling back to env.\n"
             )
