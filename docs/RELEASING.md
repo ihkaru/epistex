@@ -2,9 +2,9 @@
 
 > [!IMPORTANT]
 > **Upstream Maintainer Scope Notice**:
-> This document governs the versioning, testing, and publication lifecycle of the **Epistex Core Engine** (`src/`, `bin/gx`, `config/`).
+> This document governs the versioning, testing, and publication lifecycle of the **Epistex Core Engine** (`src/`, `bin/ep`, `config/`).
 > It applies **strictly to upstream maintainers** of the Epistex starter kit (`IS_STARTER_KIT = True`).
-> When Epistex is specialized for downstream enterprise production (via `gx init`), this file is automatically pruned to prevent agent prompt poisoning.
+> When Epistex is specialized for downstream enterprise production (via `ep init`), this file is automatically pruned to prevent agent prompt poisoning.
 
 ---
 
@@ -31,17 +31,17 @@ To eliminate agent guesswork, releases are governed by objective file-path and c
 | Change Category | Target Files Affected | Trigger Condition | SemVer Action | Agent Role |
 | :--- | :--- | :--- | :--- | :--- |
 | **Content & Knowledge** | `knowledge/**`, operational docs | Any changes exclusively in `knowledge/` | **NO-OP (No release)** | Commit & push normally. Engine version remains untouched. |
-| **Engine Bugfix / Perf** | `src/**`, `bin/gx`, `tests/**` | Commit prefix `fix:` or `perf:` | **PATCH (`v1.1.x`)** | Execute Pre-Flight Gauntlet $\rightarrow$ Bump Patch $\rightarrow$ Release. |
-| **New Feature / Additive** | `src/**`, `bin/gx`, `config/**` | Commit prefix `feat:` (e.g. new CLI command or flag) | **MINOR (`v1.x.0`)** | Execute Pre-Flight Gauntlet $\rightarrow$ Bump Minor $\rightarrow$ Release. |
+| **Engine Bugfix / Perf** | `src/**`, `bin/ep`, `tests/**` | Commit prefix `fix:` or `perf:` | **PATCH (`v1.1.x`)** | Execute Pre-Flight Gauntlet $\rightarrow$ Bump Patch $\rightarrow$ Release. |
+| **New Feature / Additive** | `src/**`, `bin/ep`, `config/**` | Commit prefix `feat:` (e.g. new CLI command or flag) | **MINOR (`v1.x.0`)** | Execute Pre-Flight Gauntlet $\rightarrow$ Bump Minor $\rightarrow$ Release. |
 | **Breaking Shift** | Public interfaces, schemas | Commit message contains `BREAKING CHANGE:` or `feat!:` | **MAJOR (`v2.0.0`)** | **Halt**: Requires explicit user / architectural approval. |
 
 ---
 
-## 3. Automated Readiness Detection (`gx doctor --check-release`)
+## 3. Automated Readiness Detection (`ep doctor --check-release`)
 
 Coding agents can verify release readiness deterministically:
 ```bash
-./bin/gx doctor --check-release --json
+./bin/ep doctor --check-release --json
 ```
 
 When unreleased code changes exist in `src/` or `bin/`, the CLI returns:
@@ -80,7 +80,7 @@ python3 ~/.gemini/config/skills/craftsman-coder/scripts/static_srp_analyzer.py .
 detect-mocks .
 
 # 4. End-to-End Repository Doctor Check
-./bin/gx doctor --check-assets --check-release --json
+./bin/ep doctor --check-assets --check-release --json
 ```
 
 ---
@@ -99,8 +99,8 @@ To eliminate human error and ensure that git tagging, branch synchronization, an
 
 The script automatically executes:
 1. Scope validation (`IS_STARTER_KIT == True`) and working tree cleanliness checks.
-2. Automated bump recommendation via `gx doctor --check-release`.
-3. The 4-gate pre-flight gauntlet (unit tests, SRP static analyzer, zero-mock detector, `gx doctor`).
+2. Automated bump recommendation via `ep doctor --check-release`.
+3. The 4-gate pre-flight gauntlet (unit tests, SRP static analyzer, zero-mock detector, `ep doctor`).
 4. Version bumping in `config/app.py` and `pyproject.toml`.
 5. Release notes extraction from `CHANGELOG.md`.
 6. Committing the release bump to `main`.

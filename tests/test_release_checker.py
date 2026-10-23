@@ -27,7 +27,7 @@ class TestReleaseChecker(unittest.TestCase):
     def test_bump_type_determination_minor(self):
         commits = [
             {"hash": "abc1", "message": "fix: typo in doctor output"},
-            {"hash": "abc2", "message": "feat(cli): add gx init specialization installer"},
+            {"hash": "abc2", "message": "feat(cli): add ep init specialization installer"},
         ]
         self.assertEqual(_determine_bump_type(commits), "minor")
 

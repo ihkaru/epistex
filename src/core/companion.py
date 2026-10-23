@@ -15,7 +15,7 @@ def format_companion_markdown(
 ) -> str:
     """Format standard companion markdown containing YAML frontmatter and pull instructions."""
     desc = description or f"Git companion pointer to binary asset offloaded to {asset.backend} storage."
-    gx_cmd = f"gx asset pull {asset.remote_key}"
+    ep_cmd = f"ep asset pull {asset.remote_key}"
 
     lines = [
         "---",
@@ -46,7 +46,7 @@ def format_companion_markdown(
         "## On-Demand Hydration",
         "To download or cache this binary asset locally on demand:",
         "```bash",
-        gx_cmd,
+        ep_cmd,
         "```",
         "",
     ]

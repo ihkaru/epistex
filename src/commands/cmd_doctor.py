@@ -73,7 +73,7 @@ def _check_companion_assets(doc: Path, meta: Dict[str, Any], storage: Any) -> Li
                 "file": str(doc),
                 "remote_key": key,
                 "error": "Asset missing from storage backend",
-                "fix_hint": f"Run 'gx asset push <file> --key {key}' to upload.",
+                "fix_hint": f"Run 'ep asset push <file> --key {key}' to upload.",
             })
     return issues
 

@@ -38,7 +38,7 @@ deadlines:
 | `tags` | Any lowercase hyphenated strings |
 | `deadlines[].date` | ISO 8601 format: `YYYY-MM-DD` |
 
-> Always run `./bin/gx doctor --json` after authoring to catch schema errors before committing.
+> Always run `./bin/ep doctor --json` after authoring to catch schema errors before committing.
 
 ## Naming Conventions
 
@@ -76,12 +76,12 @@ Use the CLI to scaffold with valid frontmatter:
 
 ```bash
 # Create a new runbook
-./bin/gx create knowledge/engineering/runbooks/RUN-002-new-runbook.md \
+./bin/ep create knowledge/engineering/runbooks/RUN-002-new-runbook.md \
   --category runbook \
   --owner "@ops-team"
 
 # Create a new ADR
-./bin/gx create knowledge/engineering/adr/ADR-002-new-decision.md \
+./bin/ep create knowledge/engineering/adr/ADR-002-new-decision.md \
   --category architecture-decision \
   --owner "@platform-eng"
 ```
@@ -92,20 +92,20 @@ Always pass `--json` for machine-readable output in agentic pipelines.
 
 - Use **relative paths** for all internal document links: `[ADR-001](../adr/ADR-001-event-driven-architecture.md)`
 - Never use absolute filesystem paths in documents
-- Run `./bin/gx doctor --json` to validate all relative links in one pass
+- Run `./bin/ep doctor --json` to validate all relative links in one pass
 
 ## Schedule & Deadline Tracking
 
 To list upcoming deadlines across all knowledge documents:
 
 ```bash
-./bin/gx schedule --limit 10 --json
+./bin/ep schedule --limit 10 --json
 ```
 
 To filter by tag or category:
 
 ```bash
-./bin/gx schedule --limit 5 --json | python3 -c "
+./bin/ep schedule --limit 5 --json | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
 for item in data.get('upcoming', []):
@@ -118,7 +118,7 @@ for item in data.get('upcoming', []):
 To get a compact token-budget-safe summary of the repository layout:
 
 ```bash
-./bin/gx map --depth 2 --compact --json
+./bin/ep map --depth 2 --compact --json
 ```
 
 This returns the directory tree in under 150 tokens — safe for agent context windows.

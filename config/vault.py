@@ -4,7 +4,7 @@ import os
 from typing import Set
 
 # Default backend: "infisical", "env", or "auto"
-VAULT_BACKEND = os.getenv("KB_VAULT_BACKEND", "auto")
+VAULT_BACKEND = os.getenv("EPISTEX_VAULT_BACKEND", "auto")
 
 # Infisical configuration defaults
 INFISICAL_API_URL = os.getenv("INFISICAL_API_URL", "https://secrets.dvlpid.my.id/api")

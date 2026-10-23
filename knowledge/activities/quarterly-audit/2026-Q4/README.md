@@ -23,13 +23,13 @@ Quarterly routine to audit document integrity, link freshness, secret hygiene, a
 ## Audit Steps
 1. Run automated doctor checks:
    ```bash
-   ./bin/gx doctor
+   ./bin/ep doctor
    ```
 2. Validate upcoming deadlines:
    ```bash
-   ./bin/gx schedule --limit 5
+   ./bin/ep schedule --limit 5
    ```
 3. Test Infisical secret injection in dry-run mode:
    ```bash
-   ./bin/gx run --dry-run -- python3 --version
+   ./bin/ep run --dry-run -- python3 --version
    ```

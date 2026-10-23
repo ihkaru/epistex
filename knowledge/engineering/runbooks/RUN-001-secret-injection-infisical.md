@@ -25,11 +25,11 @@ Run scripts, migrations, and diagnostic commands securely without persisting cre
    ```
 2. Verify available secrets in memory:
    ```bash
-   ./bin/gx secrets
+   ./bin/ep secrets
    ```
 3. Execute target command hermetically:
    ```bash
-   ./bin/gx run -- python3 -c "import os; print('Injected keys:', len(os.environ))"
+   ./bin/ep run -- python3 -c "import os; print('Injected keys:', len(os.environ))"
    ```
 
 ## Troubleshooting

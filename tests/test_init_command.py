@@ -11,7 +11,7 @@ from src.commands.cmd_init import run_init
 from src.events.dispatcher import EventDispatcher
 
 
-CLI_BIN = Path(__file__).resolve().parent.parent / "bin" / "gx"
+CLI_BIN = Path(__file__).resolve().parent.parent / "bin" / "ep"
 
 
 class TestInitCommand(unittest.TestCase):

@@ -3,7 +3,7 @@ name: epistex-downstream-setup
 description: |
   Step-by-step onboarding guide for coding agents tasked with specializing a
   freshly cloned Epistex starter kit into a production knowledge base for a
-  specific organization. Covers gx/ep init, upstream sync wiring, domain SOP
+  specific organization. Covers ep init, upstream sync wiring, domain SOP
   authoring, and the anti-poisoning invariants that protect downstream agents.
 ---
 
@@ -14,7 +14,7 @@ description: |
 This skill governs the transition from **upstream starter kit** (`IS_STARTER_KIT = True`)
 to **downstream production knowledge base** (`IS_STARTER_KIT = False`).
 
-After running `gx init` (or `ep init`), an Epistex repository transforms into an organization-specific
+After running `ep init`, an Epistex repository transforms into an organization-specific
 knowledge base. This skill ensures that transition is complete, safe, and well-documented.
 
 ---
@@ -30,7 +30,7 @@ git remote rename origin upstream
 git remote add origin https://github.com/YOUR_ORG/YOUR_REPO.git
 
 # Specialize the repository (non-interactive, agent-safe)
-./bin/gx init \
+./bin/ep init \
   --name "Organization Knowledge Base" \
   --description "Accurate description of the organization and scope" \
   --owner "@your-team-handle" \
@@ -39,7 +39,7 @@ git remote add origin https://github.com/YOUR_ORG/YOUR_REPO.git
   --json
 ```
 
-After `gx init` completes:
+After `ep init` completes:
 - `config/app.py` → `IS_STARTER_KIT = False` (release checks deactivated)
 - `docs/RELEASING.md` → **deleted** (anti-poisoning: downstream agents never see engine release instructions)
 - Sample ADR and activity docs → removed (if `--clean-samples` was passed)
@@ -143,5 +143,5 @@ git commit -m "chore(upstream): sync engine from epistex vX.Y.Z"
 |---|---|
 | Bumping `APP_VERSION` in `config/app.py` | Engine versioning is upstream's concern only |
 | Creating `git tag vX.Y.Z` | Downstream releases are content deployments, not engine releases |
-| Running `gx doctor --check-release` | This flag is suppressed in downstream mode |
+| Running `ep doctor --check-release` | This flag is suppressed in downstream mode |
 | Pushing to `upstream` remote | Downstream agents write only to `origin` |

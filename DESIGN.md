@@ -5,7 +5,7 @@
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        ep / gx / epistex CLI                           │
+│                        ep / epistex CLI                                │
 │            (Agent-First Stream Purity / POSIX Exit Codes)              │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
@@ -68,16 +68,16 @@ Storing large binary assets (PDFs, images, datasets, archives) directly in Git c
 
 ### B. Tiered Discovery Architecture
 - **Tier 1: Local Offline Git Discovery (Default)**:
-  - Commands like `gx map` and `gx doctor` only inspect local markdown files and pointers.
+  - Commands like `ep map` and `ep doctor` only inspect local markdown files and pointers.
   - Zero network overhead, instant execution, 100% offline-ready.
 - **Tier 2: On-Demand Remote Verification & Hydration (Opt-In)**:
-  - `gx asset check <key>`: Verifies remote asset existence without downloading the blob.
-  - `gx asset pull <key>`: Streams and verifies SHA-256 checksum on-demand.
-  - `gx doctor --check-assets`: Verifies whether remote assets referenced in companion documents actually exist in cloud storage.
-  - `gx map --with-assets`: Embeds remote asset metadata into the repository tree.
+  - `ep asset check <key>`: Verifies remote asset existence without downloading the blob.
+  - `ep asset pull <key>`: Streams and verifies SHA-256 checksum on-demand.
+  - `ep doctor --check-assets`: Verifies whether remote assets referenced in companion documents actually exist in cloud storage.
+  - `ep map --with-assets`: Embeds remote asset metadata into the repository tree.
 
 ### C. Cloud Authentication Modes (Opt-In & Hermetic)
-To guarantee security and flexibility across CI/CD, local dev, and enterprise agent environments, cloud storage authentication supports three distinct modes via `--cloud-auth` or `KB_CLOUD_AUTH`:
+To guarantee security and flexibility across CI/CD, local dev, and enterprise agent environments, cloud storage authentication supports three distinct modes via `--cloud-auth` or `EPISTEX_CLOUD_AUTH`:
 - **`hermetic` (Hermetic Secret Injection)**:
   - Completely bypasses ambient host `os.environ`.
   - Credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_ENDPOINT_URL`, etc.) are resolved strictly in memory from `SecretProviderInterface` (e.g., Infisical Vault).

@@ -13,7 +13,5 @@ authors = [{ name = "Knowledge Engineering Team" }]
 keywords = ["epistex", "knowledge-base", "git", "cli", "infisical", "hermetic-runner", "solid"]
 
 [project.scripts]
-ep = "bin.gx:main"
-epistex = "bin.gx:main"
-gx = "bin.gx:main"
-kb = "bin.gx:main"
+ep = "bin.ep:main"
+epistex = "bin.ep:main"

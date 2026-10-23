@@ -23,15 +23,15 @@
 ## 🧠 The Agent-Mediated Experience
 
 > [!TIP]
-> **No CLI Syntax to Memorize**: You never need to remember complex commands, flags, or configuration paths. Simply speak to your AI coding agent (Antigravity, Claude Code, Cursor, Codex) in natural language. The agent consults its embedded skills in `.agents/skills/` and translates your intent into deterministic `gx` CLI calls behind the scenes.
+> **No CLI Syntax to Memorize**: You never need to remember complex commands, flags, or configuration paths. Simply speak to your AI coding agent (Antigravity, Claude Code, Cursor, Codex) in natural language. The agent consults its embedded skills in `.agents/skills/` and translates your intent into deterministic `ep` CLI calls behind the scenes.
 
 | What You Say to Your AI Agent (Natural Intent) | What The Agent Runs Under the Hood | Outcome Delivered to You |
 |:---|:---|:---|
-| *"Specialize this repository for our team and prune sample docs"* | `./bin/gx init --name "MyOrg" --clean-samples -y --json` | Repositories specialized, metadata configured, starter-kit release triggers deactivated. |
-| *"Audit our knowledge base for broken links, missing frontmatter, or secret leaks"* | `./bin/gx doctor --check-assets --json` | Complete health audit in < 50ms; agent summarizes findings and self-heals broken links. |
-| *"What upcoming deadlines and milestones are approaching?"* | `./bin/gx schedule --limit 10 --json` | Nearest milestones queried via $O(M \log k)$ bounded min-heap in < 100 tokens. |
-| *"Draft a new Architecture Decision Record for our PostgreSQL migration"* | `./bin/gx create knowledge/engineering/adr/ADR-002-postgres.md --category architecture-decision --json` | Scaffolds standard document with valid YAML frontmatter and atomic writes (`os.replace`). |
-| *"Run our data sync script hermetically without saving credentials to disk"* | `./bin/gx run -- python3 scripts/sync.py` | Injects in-memory secrets directly from Infisical vault; zero disk leaks, zero process contamination. |
+| *"Specialize this repository for our team and prune sample docs"* | `./bin/ep init --name "MyOrg" --clean-samples -y --json` | Repositories specialized, metadata configured, starter-kit release triggers deactivated. |
+| *"Audit our knowledge base for broken links, missing frontmatter, or secret leaks"* | `./bin/ep doctor --check-assets --json` | Complete health audit in < 50ms; agent summarizes findings and self-heals broken links. |
+| *"What upcoming deadlines and milestones are approaching?"* | `./bin/ep schedule --limit 10 --json` | Nearest milestones queried via $O(M \log k)$ bounded min-heap in < 100 tokens. |
+| *"Draft a new Architecture Decision Record for our PostgreSQL migration"* | `./bin/ep create knowledge/engineering/adr/ADR-002-postgres.md --category architecture-decision --json` | Scaffolds standard document with valid YAML frontmatter and atomic writes (`os.replace`). |
+| *"Run our data sync script hermetically without saving credentials to disk"* | `./bin/ep run -- python3 scripts/sync.py` | Injects in-memory secrets directly from Infisical vault; zero disk leaks, zero process contamination. |
 
 ---
 
@@ -54,26 +54,26 @@ When tailoring this starter kit to your organization's specific requirements, ex
   - Customize `ALLOWED_STATUSES` (e.g., `["draft", "in-review", "approved", "deprecated"]`).
   - Customize `ALLOWED_CATEGORIES` (e.g., adding `sop`, `data-dictionary`, `postmortem`, `rfc`).
   - Adjust `REQUIRED_FRONTMATTER_FIELDS` to enforce internal team governance.
-  - Tailor `DEFAULT_TEMPLATES` for your automated document scaffolding via `gx create`.
+  - Tailor `DEFAULT_TEMPLATES` for your automated document scaffolding via `ep create`.
 
 ### 3. Secret Vault & Cloud Storage Integration
 - **Environment Template**: Copy [`.env.example`](.env.example) to `.env` (`cp .env.example .env`).
 - **Secret Vault ([`config/vault.py`](config/vault.py))**:
   - Point `INFISICAL_API_URL` and `INFISICAL_PROJECT_ID` to your organization's Infisical instance.
-  - Inject Machine Identity credentials (`INFISICAL_CLIENT_ID`, `INFISICAL_CLIENT_SECRET`) or use `KB_VAULT_BACKEND=env` for standard CI runners.
+  - Inject Machine Identity credentials (`INFISICAL_CLIENT_ID`, `INFISICAL_CLIENT_SECRET`) or use `EPISTEX_VAULT_BACKEND=env` for standard CI runners.
 - **Cloud Storage ([`config/cloud.py`](config/cloud.py))**:
   - Configure `S3_ENDPOINT_URL`, `S3_BUCKET_NAME`, and `S3_REGION` (compatible with AWS S3, Cloudflare R2, MinIO, Coolify S3, Backblaze).
-  - Select your cloud authentication mode: `KB_CLOUD_AUTH=hermetic` (zero disk secrets) or `env`.
+  - Select your cloud authentication mode: `EPISTEX_CLOUD_AUTH=hermetic` (zero disk secrets) or `env`.
 
 ### 4. Knowledge Domain Organization
 - **Prune Sample Documents**: Remove or replace initial boilerplate examples in [`knowledge/engineering/adr/`](knowledge/engineering/adr/) and [`knowledge/activities/`](knowledge/activities/).
 - **Establish Business Domains**: Create domain directories that map to your team's real operational boundaries (e.g. `knowledge/data-platform/`, `knowledge/governance/`, `knowledge/infrastructure/`).
-- **Scaffold New Documents**: Use `./bin/gx create <template> <path>` to generate new standard documents with atomic writes.
+- **Scaffold New Documents**: Use `./bin/ep create <template> <path>` to generate new standard documents with atomic writes.
 
 ### 5. Final Verification & Documentation Cleanup
 - Run the full verification gauntlet to confirm compliance with your customized schemas:
   ```bash
-  ./bin/gx doctor --check-assets --json
+  ./bin/ep doctor --check-assets --json
   ```
 - Once verified, remove or replace this **Specialization Checklist** section in `README.md` with your team's operational manual.
 
@@ -121,10 +121,8 @@ epistex/
 ├── .githooks/                       # Git lifecycle hooks
 │   └── pre-commit                   # 300-line SRP guard & anti-poisoning check
 ├── bin/
-│   ├── ep                           # Short canonical CLI entrypoint (chmod +x)
-│   ├── epistex                      # Full canonical alias symlink (chmod +x)
-│   ├── gx                           # Backward-compatible symlink (chmod +x)
-│   └── kb                           # Legacy transition symlink (chmod +x)
+│   ├── ep                           # Canonical CLI executable (chmod +x)
+│   └── epistex                      # Full alias symlink -> ep (chmod +x)
 ├── config/                          # Convention-over-configuration settings
 │   ├── app.py                       # App metadata, paths, IS_STARTER_KIT flag
 │   ├── schema.py                    # Frontmatter schema rules & templates
@@ -172,12 +170,12 @@ epistex/
 
 ## Quickstart & CLI Commands
 
-All commands can be invoked directly using `./bin/ep` or `./bin/gx` (or the `epistex` alias) without installation:
+All commands can be invoked directly using `./bin/ep` (or the `epistex` alias) without installation:
 
-### 1. Repository Health Audit (`gx doctor`)
+### 1. Repository Health Audit (`ep doctor`)
 Validates frontmatter schema compliance, relative link integrity, line limit caps, and secret leak sentinels:
 ```bash
-./bin/gx doctor --json
+./bin/ep doctor --json
 ```
 Output (STDOUT pure data):
 ```json
@@ -192,73 +190,73 @@ Output (STDOUT pure data):
 }
 ```
 
-### 2. Token-Efficient Repository Map (`gx map`)
+### 2. Token-Efficient Repository Map (`ep map`)
 Produces a bounded, token-efficient structural overview of all domains:
 ```bash
-./bin/gx map --depth 2 --compact --json
+./bin/ep map --depth 2 --compact --json
 ```
 
-### 3. Query Upcoming Schedules (`gx schedule`)
+### 3. Query Upcoming Schedules (`ep schedule`)
 Uses a bounded min-heap ($O(M \log k)$) to extract nearest deadlines:
 ```bash
-./bin/gx schedule --limit 5 --json
+./bin/ep schedule --limit 5 --json
 ```
 
-### 4. Hermetic Execution with Secret Injection (`gx run`)
+### 4. Hermetic Execution with Secret Injection (`ep run`)
 Executes a command in an isolated environment with secrets injected directly into process memory:
 ```bash
 # Preview execution in dry-run mode
-./bin/gx run --dry-run -- python3 -c "import os; print(os.environ)"
+./bin/ep run --dry-run -- python3 -c "import os; print(os.environ)"
 
 # Execute hermetically with Infisical secrets
-./bin/gx run -- python3 -c "import os; print('Injected keys:', len(os.environ))"
+./bin/ep run -- python3 -c "import os; print('Injected keys:', len(os.environ))"
 ```
 
-### 5. Inspect Secret Provider Status (`gx secrets`)
+### 5. Inspect Secret Provider Status (`ep secrets`)
 Inspects active secret provider connectivity and masks keys for safe diagnostics:
 ```bash
-./bin/gx secrets --json
+./bin/ep secrets --json
 ```
 
-### 6. Scaffold New Documents Atomically (`gx create`)
+### 6. Scaffold New Documents Atomically (`ep create`)
 Scaffolds documents from standard templates (`adr`, `runbook`, `activity`) using atomic writes:
 ```bash
-./bin/gx create adr engineering/adr/ADR-002-distributed-tracing.md --title "Distributed Tracing"
+./bin/ep create adr engineering/adr/ADR-002-distributed-tracing.md --title "Distributed Tracing"
 ```
 
-### 7. Cloud Asset Offloading & Tiered Hydration (`gx asset`)
+### 7. Cloud Asset Offloading & Tiered Hydration (`ep asset`)
 
 Prevent Git repository bloat by storing heavy binary assets (PDFs, images, datasets) in cloud/local storage while keeping lightweight companion markdown pointers in Git:
 
 ```bash
 # 1. Offload binary asset and generate Git companion markdown atomically
-./bin/gx asset push path/to/spec.pdf --key specs/network-topology.pdf --companion engineering/assets/network.md --title "Network Topology"
+./bin/ep asset push path/to/spec.pdf --key specs/network-topology.pdf --companion engineering/assets/network.md --title "Network Topology"
 
 # 2. Check remote asset existence without downloading full blob
-./bin/gx asset check specs/network-topology.pdf --json
+./bin/ep asset check specs/network-topology.pdf --json
 
 # 3. Discover assets across local and cloud tiers
-./bin/gx asset list --tier all --json
+./bin/ep asset list --tier all --json
 
 # 4. Download / hydrate asset on-demand and verify SHA-256
-./bin/gx asset pull specs/network-topology.pdf --target /tmp/restored-spec.pdf --json
+./bin/ep asset pull specs/network-topology.pdf --target /tmp/restored-spec.pdf --json
 
 # 5. Audit cloud assets in doctor
-./bin/gx doctor --check-assets --json
+./bin/ep doctor --check-assets --json
 ```
 
 #### Opt-In Cloud Storage & Flexible Authentication Modes
-Cloud storage is **strictly opt-in** (`local` by default). When using an S3-compatible backend (`--backend s3` or `KB_CLOUD_STORAGE=s3`), credentials can be resolved via three security postures:
-1. **Hermetic Injection (`--cloud-auth hermetic` or `KB_CLOUD_AUTH=hermetic`)**:
+Cloud storage is **strictly opt-in** (`local` by default). When using an S3-compatible backend (`--backend s3` or `EPISTEX_CLOUD_STORAGE=s3`), credentials can be resolved via three security postures:
+1. **Hermetic Injection (`--cloud-auth hermetic` or `EPISTEX_CLOUD_AUTH=hermetic`)**:
    Credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, etc.) are resolved strictly in-memory from the configured `SecretProviderInterface` (e.g. Infisical). Host `os.environ` is bypassed and no credentials ever touch disk.
-2. **Environment Only (`--cloud-auth env` or `KB_CLOUD_AUTH=env`)**:
+2. **Environment Only (`--cloud-auth env` or `EPISTEX_CLOUD_AUTH=env`)**:
    Credentials are read strictly from host `os.environ` / `.env`.
-3. **Auto Detection (`--cloud-auth auto` or `KB_CLOUD_AUTH=auto`)**:
+3. **Auto Detection (`--cloud-auth auto` or `EPISTEX_CLOUD_AUTH=auto`)**:
    Checks secret provider first, then falls back to ambient environment.
 
 Example hermetic upload with Infisical secrets:
 ```bash
-./bin/gx asset push report.pdf --key reports/q4.pdf --backend s3 --cloud-auth hermetic
+./bin/ep asset push report.pdf --key reports/q4.pdf --backend s3 --cloud-auth hermetic
 ```
 
 ---

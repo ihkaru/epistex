@@ -58,7 +58,7 @@ echo ""
 
 # ── Gate 4: Repository Health Audit ──────────────────────
 echo "Gate 4: Running end-to-end repository health audit..."
-if ./bin/gx doctor --json 2>/dev/null | python3 -c "
+if ./bin/ep doctor --json 2>/dev/null | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
 status = data.get('status', 'unknown')
@@ -75,7 +75,7 @@ else:
 "; then
   echo "$PASS Gate 4: Repository is healthy."
 else
-  echo "$FAIL Gate 4: Repository health check failed. Inspect gx doctor output."
+  echo "$FAIL Gate 4: Repository health check failed. Inspect ep doctor output."
   ERRORS=$((ERRORS + 1))
 fi
 echo ""

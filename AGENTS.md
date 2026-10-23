@@ -1,7 +1,7 @@
 # Agent-First Tool Contract & Operational Protocol (AGENTS.md)
 
 ## 1. Dual-Audience CLI Design
-The `ep` / `gx` CLI (Epistex) provides strict stream separation between machine payload, runtime diagnostics, and visual display:
+The `ep` / `epistex` CLI (Epistex) provides strict stream separation between machine payload, runtime diagnostics, and visual display:
 
 ```text
                ┌────────────────────────────────────────────────────────┐
@@ -29,7 +29,7 @@ The `ep` / `gx` CLI (Epistex) provides strict stream separation between machine 
   | `0` | `EX_OK` | Execution successful. | Proceed to next task. |
   | `2` | `EX_USAGE` | Invalid CLI arguments/flags. | Read `--help` and correct invocation syntax. |
   | `65` | `EX_DATAERR` | Frontmatter/schema validation error. | Enter repair loop using `fix_hint`. |
-  | `66` | `EX_NOINPUT` | Target document not found. | Verify path or scaffold using `gx create`. |
+  | `66` | `EX_NOINPUT` | Target document not found. | Verify path or scaffold using `ep create`. |
   | `70` | `EX_SOFTWARE` | Internal runner or script exception. | Inspect STDERR stack trace. |
   | `78` | `EX_CONFIG` | Secret provider / vault error. | Check credentials or use fallback. |
 
@@ -52,28 +52,28 @@ When a command fails with `--json`, it returns an actionable envelope enabling s
 ## 2. Key Operational Patterns
 - **Machine-First Degradation**: Automatically checks `sys.stdout.isatty()`. In headless subshells, ANSI styling is disabled automatically.
 - **Atomic Writes via Rename (`os.replace`)**: All mutations write to a temporary file first, then atomically replace the target to prevent file corruption.
-- **Idempotency & Safe Mutation**: Running `gx create` multiple times will not overwrite files unless `--force` is specified.
+- **Idempotency & Safe Mutation**: Running `ep create` multiple times will not overwrite files unless `--force` is specified.
 - **Token-Budget Preserving Invocations**:
-  - `gx map --depth 2 --compact`: Summarizes repository layout in < 150 tokens.
-  - `gx schedule --limit 5`: Queries nearest deadlines in < 100 tokens.
+  - `ep map --depth 2 --compact`: Summarizes repository layout in < 150 tokens.
+  - `ep schedule --limit 5`: Queries nearest deadlines in < 100 tokens.
 - **Hermetic Code Execution**:
-  - `gx run -- <cmd>` executes commands in a stripped environment, injecting secrets in-memory from Infisical (or fallback).
+  - `ep run -- <cmd>` executes commands in a stripped environment, injecting secrets in-memory from Infisical (or fallback).
   - Supports `--dry-run` to preview commands and injected keys without executing.
 - **Cloud Asset Offloading & Tiered Hydration**:
-  - Offload binary files: `gx asset push <file> --key <key> --companion <path.md>` to keep Git lightweight.
-  - Check existence without downloading: `gx asset check <key>`.
-  - Hydrate / download binary on-demand: `gx asset pull <key> --target <path>`.
-  - Discover assets: `gx asset list --tier local|cloud|all`.
-  - Verify asset integrity during health check: `gx doctor --check-assets --json`.
+  - Offload binary files: `ep asset push <file> --key <key> --companion <path.md>` to keep Git lightweight.
+  - Check existence without downloading: `ep asset check <key>`.
+  - Hydrate / download binary on-demand: `ep asset pull <key> --target <path>`.
+  - Discover assets: `ep asset list --tier local|cloud|all`.
+  - Verify asset integrity during health check: `ep doctor --check-assets --json`.
 
 ---
 
-## 3. Autonomous Repository Specialization (`gx init`)
+## 3. Autonomous Repository Specialization (`ep init`)
 
 When a coding agent is instructed to adopt, initialize, or specialize Epistex for a company or project, the agent **MUST** invoke the initialization installer non-interactively:
 
 ```bash
-./bin/gx init \
+./bin/ep init \
   --name "Project / Org Name" \
   --description "Accurate project description" \
   --owner "@team-or-handle" \
@@ -85,7 +85,7 @@ When a coding agent is instructed to adopt, initialize, or specialize Epistex fo
 ### Agent Invariants during Specialization:
 1. **Zero-Interactivity**: Always supply `--yes` or `-y` along with `--json` to prevent blocking on interactive stdin prompts.
 2. **Boilerplate Pruning**: Pass `--clean-samples` to purge development-only sample documents (`knowledge/engineering/adr/` and `knowledge/activities/`).
-3. **Automated Documentation Clean-up**: `gx init` automatically converts the starter-kit alert and checklist in `README.md` into an active organization knowledge base header.
+3. **Automated Documentation Clean-up**: `ep init` automatically converts the starter-kit alert and checklist in `README.md` into an active organization knowledge base header.
 4. **Environment Initialization**: Generates `.env` from `.env.example` if absent, allowing subsequent secret vault configuration.
 
 ---
@@ -95,8 +95,8 @@ When a coding agent is instructed to adopt, initialize, or specialize Epistex fo
 To guarantee that coding agents remain strictly aligned with the operational context and never confuse **Downstream Content Maintenance** with **Upstream Framework Releasing**, agents **MUST** respect the repository mode defined in `config/app.py`:
 
 ### A. Downstream Operational Mode (`IS_STARTER_KIT = False`)
-When Epistex has been specialized for an organization (e.g. via `gx init`):
-1. **Content-Only Scope**: The agent's responsibility is exclusively authoring, updating, and auditing knowledge documents (`knowledge/`), running hermetic tasks (`gx run`), and verifying health (`gx doctor`).
+When Epistex has been specialized for an organization (e.g. via `ep init`):
+1. **Content-Only Scope**: The agent's responsibility is exclusively authoring, updating, and auditing knowledge documents (`knowledge/`), running hermetic tasks (`ep run`), and verifying health (`ep doctor`).
 2. **Zero-Release Invariant**: Autonomous agents **MUST NOT** bump engine versions, create git release tags, or generate engine release notes for content updates. Engine release triggers are completely deactivated.
 3. **Upstream Synchronization**: Downstream repositories pull framework and CLI enhancements from upstream without touching internal documents:
    ```bash
@@ -106,10 +106,10 @@ When Epistex has been specialized for an organization (e.g. via `gx init`):
    ```
 
 ### B. Upstream Starter Kit Mode (`IS_STARTER_KIT = True`)
-When maintaining the open-source Epistex engine (`src/`, `bin/gx`, `config/`):
-1. **Automated Release Verification**: Run `./bin/gx doctor --check-release --json` to detect whether unreleased code commits warrant a Patch or Minor release.
+When maintaining the open-source Epistex engine (`src/`, `bin/ep`, `config/`):
+1. **Automated Release Verification**: Run `./bin/ep doctor --check-release --json` to detect whether unreleased code commits warrant a Patch or Minor release.
 2. **Release Governance**: Follow the comprehensive state machine and pre-flight gates documented strictly in [`docs/RELEASING.md`](docs/RELEASING.md).
-3. **Anti-Poisoning Pruning**: When `gx init` is executed, [`docs/RELEASING.md`](docs/RELEASING.md) is automatically pruned so downstream agents never encounter engine release instructions.
+3. **Anti-Poisoning Pruning**: When `ep init` is executed, [`docs/RELEASING.md`](docs/RELEASING.md) is automatically pruned so downstream agents never encounter engine release instructions.
 
 ---
 
@@ -124,7 +124,7 @@ The `.agents/` directory provides the on-demand skill library and stop-hook gate
 │   └── pre_stop.sh                     # 4-gate gauntlet executed before agent may stop
 └── skills/
     ├── epistex-doctor/
-    │   └── SKILL.md                    # gx doctor audit, exit code interpretation & repair loop
+    │   └── SKILL.md                    # ep doctor audit, exit code interpretation & repair loop
     ├── epistex-knowledge-author/
     │   └── SKILL.md                    # Frontmatter schema, naming conventions, link integrity
     └── epistex-downstream-setup/
@@ -141,7 +141,7 @@ The `.agents/` directory provides the on-demand skill library and stop-hook gate
 
 ### Adding Downstream-Specific Skills
 
-After `gx init` specializes the repository, **downstream agents** may add their own skills under `.agents/skills/`:
+After `ep init` specializes the repository, **downstream agents** may add their own skills under `.agents/skills/`:
 
 ```bash
 mkdir -p .agents/skills/my-domain-skill
@@ -171,7 +171,7 @@ python3 ~/.gemini/config/skills/craftsman-coder/scripts/static_srp_analyzer.py .
 detect-mocks .
 
 # 4. End-to-End Repository Health Audit
-./bin/gx doctor --check-assets --json
+./bin/ep doctor --check-assets --json
 ```
 
 Agents must never conclude a task without terminal output evidence validating all four gates.

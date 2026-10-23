@@ -34,7 +34,7 @@ To keep releases predictable and zero-regression:
 3. **Pre-Stop Gate**:
    - Verify repository health:
      ```bash
-     ./bin/gx doctor --check-assets --json
+     ./bin/ep doctor --check-assets --json
      ```
 
 ---
@@ -42,4 +42,4 @@ To keep releases predictable and zero-regression:
 ## 3. Upstream vs Downstream Contribution
 
 - **Upstream Scope (`IS_STARTER_KIT = True`)**: This repository (`ihkaru/epistex`) is the upstream starter kit engine. Maintainer releases, SemVer bumping, and engine development happen here.
-- **Downstream Specialization (`IS_STARTER_KIT = False`)**: If you cloned Epistex for your private organization, specialize it with `./bin/gx init`. Do not submit organization-specific documents or credentials upstream.
+- **Downstream Specialization (`IS_STARTER_KIT = False`)**: If you cloned Epistex for your private organization, specialize it with `./bin/ep init`. Do not submit organization-specific documents or credentials upstream.

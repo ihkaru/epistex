@@ -58,8 +58,8 @@ fi
 # ------------------------------------------------------------------------------
 # 2. Automated Release Readiness Inspection
 # ------------------------------------------------------------------------------
-echo "=== Step 2: Checking Release Readiness via gx doctor ==="
-RELEASE_JSON=$(./bin/gx doctor --check-release --json 2>/dev/null)
+echo "=== Step 2: Checking Release Readiness via ep doctor ==="
+RELEASE_JSON=$(./bin/ep doctor --check-release --json 2>/dev/null)
 
 RELEASE_REQUIRED=$(echo "$RELEASE_JSON" | python3 -c "import sys, json; print(json.load(sys.stdin).get('release_readiness', {}).get('release_required', False))")
 RECOMMENDED_BUMP=$(echo "$RELEASE_JSON" | python3 -c "import sys, json; print(json.load(sys.stdin).get('release_readiness', {}).get('recommended_bump', 'patch'))")
@@ -115,7 +115,7 @@ if command -v detect-mocks &>/dev/null; then
 fi
 
 echo "• Gate 4: Repository Health Check..."
-./bin/gx doctor --check-assets --json > /dev/null
+./bin/ep doctor --check-assets --json > /dev/null
 
 echo "✅ All pre-flight gauntlet gates passed."
 

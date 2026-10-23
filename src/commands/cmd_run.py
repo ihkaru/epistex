@@ -24,7 +24,7 @@ def run_code(
             "status": "error",
             "exit_code": EX_USAGE,
             "error_type": "EMPTY_COMMAND",
-            "message": "No command specified. Usage: gx run [--dry-run] -- <command>",
+            "message": "No command specified. Usage: ep run [--dry-run] -- <command>",
         }
 
     provider = secret_provider or create_secret_provider(vault_backend)

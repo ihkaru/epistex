@@ -7,16 +7,14 @@
 - **SOLID & Interface-First Design**: Strict Dependency Inversion via abstract contracts (`src/contracts/`).
 - **Event-Driven Architecture (EDA)**: Extensible pub/sub dispatcher and lifecycle hooks (`src/events/`).
 - **Hermetic Code Execution**: Memory-only secret injection with first-party Infisical support and fallback to process environment.
-- **Dual-Audience CLI (`ep` / `gx` / `epistex`)**: Agent-first tool contract with pure machine-readable STDOUT on `--json` and POSIX sysexits.
+- **Dual-Audience CLI (`ep` / `epistex`)**: Agent-first tool contract with pure machine-readable STDOUT on `--json` and POSIX sysexits.
 
 ## 2. Directory Taxonomy & Conventions
 ```text
 .
 ├── bin/
-│   ├── ep                           # Short canonical CLI entrypoint (chmod +x)
-│   ├── epistex                      # Full canonical alias symlink (chmod +x)
-│   ├── gx                           # Backward-compatible symlink (chmod +x)
-│   └── kb                           # Legacy transition symlink (chmod +x)
+│   ├── ep                           # Canonical CLI executable (chmod +x)
+│   └── epistex                      # Full alias symlink -> ep (chmod +x)
 ├── config/                          # Centralized convention configuration
 │   ├── app.py                       # App metadata, defaults, exit code mappings
 │   ├── schema.py                    # Frontmatter schemas & allowed statuses
@@ -47,7 +45,7 @@
 3. **Schedule Query ($O(M \log k)$)**: Query upcoming deadlines using a bounded min-heap (`heapq`).
 4. **Link Integrity Audit ($O(N + R)$)**: Single-pass hash inverted index for $O(1)$ relative link lookups.
 5. **Class & Function Length Caps**: Classes must not exceed 180 lines; functions must not exceed 50 lines.
-6. **Cloud Asset Offloading & Auth Modes (Git Bloat Prevention)**: Binary files (PDFs, images, archives) must not be committed directly to Git. Use `gx asset push` to offload to cloud storage with a Git-native companion markdown pointer. Cloud connectivity is strictly opt-in (`local` by default) with three configurable auth postures (`--cloud-auth` / `KB_CLOUD_AUTH`): `hermetic` (memory-only secret injection via `SecretProviderInterface`), `env` (environment variables), or `auto`.
+6. **Cloud Asset Offloading & Auth Modes (Git Bloat Prevention)**: Binary files (PDFs, images, archives) must not be committed directly to Git. Use `ep asset push` to offload to cloud storage with a Git-native companion markdown pointer. Cloud connectivity is strictly opt-in (`local` by default) with three configurable auth postures (`--cloud-auth` / `EPISTEX_CLOUD_AUTH`): `hermetic` (memory-only secret injection via `SecretProviderInterface`), `env` (environment variables), or `auto`.
 
 ## 4. Verification & Testing Commands
 Run all automated verification gates:
@@ -56,10 +54,10 @@ Run all automated verification gates:
 python3 -m unittest discover -s tests -v
 
 # 2. Run repository doctor audit (with optional asset verification)
-./bin/gx doctor --check-assets --json
+./bin/ep doctor --check-assets --json
 
 # 3. Test hermetic dry-run execution
-./bin/gx run --dry-run -- python3 --version
+./bin/ep run --dry-run -- python3 --version
 ```
 
 ---
@@ -73,7 +71,7 @@ On-demand skill library and stop-hook gate for coding agents:
 ├── hooks.json                    # AGY stop-hook: runs pre_stop.sh before agent stops
 ├── hooks/pre_stop.sh             # 4-gate verification gauntlet (tests + SRP + mocks + doctor)
 └── skills/
-    ├── epistex-doctor/           # gx/ep doctor audit workflow & repair loop
+    ├── epistex-doctor/           # ep doctor audit workflow & repair loop
     ├── epistex-knowledge-author/ # Frontmatter schema, naming conventions, link integrity
     └── epistex-downstream-setup/ # Downstream specialization & upstream sync protocol
 ```
@@ -91,8 +89,8 @@ Read the relevant `SKILL.md` before performing specialized tasks:
 
 | Flag Value | Context | Agent Scope |
 |---|---|---|
-| `IS_STARTER_KIT = True` | **Upstream** (this repo) | Engine maintenance, release checks active (`gx doctor --check-release`) |
-| `IS_STARTER_KIT = False` | **Downstream** (after `gx init`) | Content-only; engine releases, git tags, and `docs/RELEASING.md` suppressed |
+| `IS_STARTER_KIT = True` | **Upstream** (this repo) | Engine maintenance, release checks active (`ep doctor --check-release`) |
+| `IS_STARTER_KIT = False` | **Downstream** (after `ep init`) | Content-only; engine releases, git tags, and `docs/RELEASING.md` suppressed |
 
 Downstream agents **MUST NOT** bump engine versions or create git release tags.
 All downstream changes are content-only (`knowledge/`, domain docs, GEMINI.md).
@@ -101,7 +99,7 @@ All downstream changes are content-only (`knowledge/`, domain docs, GEMINI.md).
 
 ## 7. Downstream GEMINI.md Template
 
-After running `gx init`, downstream organizations **MUST** enrich `GEMINI.md` with
+After running `ep init`, downstream organizations **MUST** enrich `GEMINI.md` with
 domain-specific sections. Minimum required sections:
 
 ```markdown
