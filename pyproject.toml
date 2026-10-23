@@ -3,16 +3,17 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "gnosidex"
+name = "epistex"
 version = "1.2.0"
-description = "Gnosidex: Enterprise Git-Based Knowledge Base Starter Kit with Hermetic Execution & Infisical Secret Injection"
+description = "Epistex: Enterprise Git-Based Knowledge Base Starter Kit with Hermetic Execution & Infisical Secret Injection"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Knowledge Engineering Team" }]
-keywords = ["gnosidex", "knowledge-base", "git", "cli", "infisical", "hermetic-runner", "solid"]
+keywords = ["epistex", "knowledge-base", "git", "cli", "infisical", "hermetic-runner", "solid"]
 
 [project.scripts]
+ep = "bin.gx:main"
+epistex = "bin.gx:main"
 gx = "bin.gx:main"
-gnosidex = "bin.gx:main"
 kb = "bin.gx:main"

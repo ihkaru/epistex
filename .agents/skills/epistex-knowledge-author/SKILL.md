@@ -1,13 +1,13 @@
 ---
-name: gnosidex-knowledge-author
+name: epistex-knowledge-author
 description: |
   Guides agents in authoring, validating, and organizing knowledge documents
-  within a Gnosidex knowledge base. Covers frontmatter schema, document
+  within an Epistex knowledge base. Covers frontmatter schema, document
   categories, naming conventions, link integrity, and schedule management.
   Activate whenever creating, editing, or auditing knowledge documents.
 ---
 
-# Gnosidex Knowledge Authoring Skill
+# Epistex Knowledge Authoring Skill
 
 ## Document Structure & Frontmatter
 

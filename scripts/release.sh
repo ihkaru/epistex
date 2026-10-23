@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Gnosidex Deterministic Release Automation Engine (scripts/release.sh)
+# Epistex Deterministic Release Automation Engine (scripts/release.sh)
 # Follows the Laravel Release Model & SemVer 2.0.0
 # ==============================================================================
 # Usage:
@@ -136,7 +136,7 @@ sed -i "s/APP_VERSION = \".*\"/APP_VERSION = \"$NEXT_VERSION\"/" config/app.py
 sed -i "s/version = \".*\"/version = \"$NEXT_VERSION\"/" pyproject.toml
 
 # Extract Release Notes from CHANGELOG.md
-TEMP_NOTES="/tmp/gnosidex_release_notes_${NEXT_VERSION}.md"
+TEMP_NOTES="/tmp/epistex_release_notes_${NEXT_VERSION}.md"
 python3 -c "
 import sys, re
 changelog = open('CHANGELOG.md', encoding='utf-8').read()

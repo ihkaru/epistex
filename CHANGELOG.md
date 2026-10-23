@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to **Gnosidex** will be documented in this file.
+All notable changes to **Epistex** will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) following the [Laravel Release Model](https://laravel.com/docs/releases).
@@ -11,9 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Agent Infrastructure Directory (`.agents/`)**: Introduced on-demand skill library and stop-hook gate for coding agents:
   - `.agents/hooks.json` — AGY stop-hook configuration wiring `pre_stop.sh` before agent may stop.
   - `.agents/hooks/pre_stop.sh` — 4-gate verification gauntlet (unit tests + SRP analyzer + zero-mock detector + `gx doctor`) executed automatically before any agent turn completes.
-  - `.agents/skills/gnosidex-doctor/SKILL.md` — Health audit workflow with exit code interpretation, self-healing repair loop, and asset verification protocol.
-  - `.agents/skills/gnosidex-knowledge-author/SKILL.md` — Frontmatter schema, naming conventions, link integrity rules, and `gx create` scaffold patterns.
-  - `.agents/skills/gnosidex-downstream-setup/SKILL.md` — Complete downstream onboarding guide: `gx init` flow, GEMINI.md domain SOP template, upstream sync protocol, and anti-poisoning invariants.
+  - `.agents/skills/epistex-doctor/SKILL.md` — Health audit workflow with exit code interpretation, self-healing repair loop, and asset verification protocol.
+  - `.agents/skills/epistex-knowledge-author/SKILL.md` — Frontmatter schema, naming conventions, link integrity rules, and `gx create` scaffold patterns.
+  - `.agents/skills/epistex-downstream-setup/SKILL.md` — Complete downstream onboarding guide: `gx init` flow, GEMINI.md domain SOP template, upstream sync protocol, and anti-poisoning invariants.
 - **Pre-Commit Hook (`.githooks/pre-commit`)**: Enforces Python 300-line SRP limit and blocks `RELEASING.md` commits in downstream repos (anti-poisoning guard). Auto-activated via `git config core.hooksPath .githooks` on `gx init`.
 - **Downstream GEMINI.md Template (§7 in `GEMINI.md`)**: Documents required sections for downstream organizations to fill after `gx init` — Identity SOP, Domain Business Logic, Tooling Stack Mandates, Anti-Assumption Rules, Content-Only Scope declaration.
 
@@ -29,20 +29,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **`gx init` Specialization Installer**: Added autonomous, non-interactive CLI command (`gx init`) enabling coding agents to specialize the repository for an organization, update metadata in `config/app.py`, prune sample starter documents, and generate `.env` from template.
-- **Unified CLI Executable (`gx`)**: Established `gx` as the canonical 2-character CLI executable (`bin/gx`), eliminating naming redundancy while maintaining backward-compatible symlinks (`gnosidex -> gx` and `kb -> gx`).
-- **Comprehensive Agent Versioning Protocol**: Formulated and documented Laravel-inspired series maintenance (`1.x`), SemVer 2.0.0 release gates, and downstream upstream merge safety in `AGENTS.md` and `README.md`.
+- **Unified CLI Executable (`ep` / `gx`)**: Established `ep` and `gx` as the canonical CLI executables (`bin/ep`, `bin/gx`), maintaining backward-compatible symlinks.
+- **Agent-First Governance & Versioning Protocol**: Formulated and documented Laravel-inspired series maintenance (`1.x`), SemVer 2.0.0 release gates, and downstream upstream merge safety in `AGENTS.md` and `README.md`.
 - **Environment Template (`.env.example`)**: Added comprehensive configuration template for Infisical Vault integration and S3-compatible cloud storage.
 
 ### Changed
-- Refactored CLI commands, error envelopes, doctor `fix_hint` attributes, companion generation, and test suites to adopt `gx` as the primary executable.
-- Aligned `pyproject.toml` console scripts with `gx = "bin.gx:main"`.
+- Refactored CLI commands, error envelopes, doctor `fix_hint` attributes, companion generation, and test suites to adopt canonical executables.
+- Aligned `pyproject.toml` console scripts with `ep = "bin.gx:main"` and `epistex = "bin.gx:main"`.
 
 ---
 
 ## [v1.0.0] - 2026-10-18
 
 ### Added
-- Initial release of **Gnosidex**: Enterprise Git-Based Knowledge Base Starter Kit.
+- Initial release of **Epistex**: Enterprise Git-Based Knowledge Base Starter Kit.
 - Pure Python 3.10+ standard library core with zero external runtime dependencies.
 - SOLID & Interface-First architecture (DIP) with abstract contracts in `src/contracts/`.
 - Event-Driven Architecture (EDA) with typed domain events and priority listener bus.

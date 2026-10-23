@@ -1,6 +1,6 @@
-# Contributing to Gnosidex
+# Contributing to Epistex
 
-Thank you for considering contributing to Gnosidex! The contribution model is modeled directly after the **Laravel Open Source Framework**.
+Thank you for considering contributing to Epistex! The contribution model is modeled directly after the **Laravel Open Source Framework**.
 
 ---
 
@@ -28,7 +28,7 @@ To keep releases predictable and zero-regression:
      ```
 2. **Quality & Architecture Invariants**:
    - **SRP Limits**: Classes $\le 180$ lines, functions $\le 50$ lines.
-   - **Zero External Dependencies**: Gnosidex core must remain 100% standard library Python 3.10+.
+   - **Zero External Dependencies**: Epistex core must remain 100% standard library Python 3.10+.
    - **Zero-Mock Production Paths**: No mock leaks or dummy simulators outside `tests/`.
    - **Stream Purity**: CLI commands must output pure JSON to STDOUT when `--json` is passed.
 3. **Pre-Stop Gate**:
@@ -41,5 +41,5 @@ To keep releases predictable and zero-regression:
 
 ## 3. Upstream vs Downstream Contribution
 
-- **Upstream Scope (`IS_STARTER_KIT = True`)**: This repository (`ihkaru/gnosidex`) is the upstream starter kit engine. Maintainer releases, SemVer bumping, and engine development happen here.
-- **Downstream Specialization (`IS_STARTER_KIT = False`)**: If you cloned Gnosidex for your private organization, specialize it with `./bin/gx init`. Do not submit organization-specific documents or credentials upstream.
+- **Upstream Scope (`IS_STARTER_KIT = True`)**: This repository (`ihkaru/epistex`) is the upstream starter kit engine. Maintainer releases, SemVer bumping, and engine development happen here.
+- **Downstream Specialization (`IS_STARTER_KIT = False`)**: If you cloned Epistex for your private organization, specialize it with `./bin/gx init`. Do not submit organization-specific documents or credentials upstream.

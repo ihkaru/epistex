@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/brand/gnosidex-wordmark-light.svg">
-    <img src="docs/images/brand/gnosidex-wordmark.svg" alt="Gnosidex" height="64">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/brand/epistex-wordmark-light.svg">
+    <img src="docs/images/brand/epistex-wordmark.svg" alt="Epistex" height="64">
   </picture>
 </p>
 
@@ -15,7 +15,7 @@
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
   <img src="https://img.shields.io/badge/dependencies-zero_runtime-success.svg" alt="Zero-Dependency Core">
   <img src="https://img.shields.io/badge/architecture-SOLID%20%7C%20EDA%20%7C%20DIP-purple.svg" alt="Code Architecture">
-  <a href="https://github.com/ihkaru/gnosidex/releases"><img src="https://img.shields.io/badge/release-v1.2.0%20(Laravel%20Model)-blue.svg" alt="Latest Release"></a>
+  <a href="https://github.com/ihkaru/epistex/releases"><img src="https://img.shields.io/badge/release-v1.2.0%20(Laravel%20Model)-blue.svg" alt="Latest Release"></a>
 </p>
 
 ---
@@ -46,27 +46,27 @@
 When tailoring this starter kit to your organization's specific requirements, execute the following specialization sequence:
 
 ### 1. Identity & Metadata Customization
-- **[`config/app.py`](file:///root/projects/gnosidex/config/app.py)**: Update `APP_NAME`, `APP_DESCRIPTION`, and `APP_VERSION` to reflect your team or organizational identity.
-- **[`README.md`](file:///root/projects/gnosidex/README.md)**: Replace the root title and introductory charter with your organization's specific mission and guidelines.
+- **[`config/app.py`](config/app.py)**: Update `APP_NAME`, `APP_DESCRIPTION`, and `APP_VERSION` to reflect your team or organizational identity.
+- **[`README.md`](README.md)**: Replace the root title and introductory charter with your organization's specific mission and guidelines.
 
 ### 2. Schema & Governance Rules
-- **[`config/schema.py`](file:///root/projects/gnosidex/config/schema.py)**:
+- **[`config/schema.py`](config/schema.py)**:
   - Customize `ALLOWED_STATUSES` (e.g., `["draft", "in-review", "approved", "deprecated"]`).
   - Customize `ALLOWED_CATEGORIES` (e.g., adding `sop`, `data-dictionary`, `postmortem`, `rfc`).
   - Adjust `REQUIRED_FRONTMATTER_FIELDS` to enforce internal team governance.
   - Tailor `DEFAULT_TEMPLATES` for your automated document scaffolding via `gx create`.
 
 ### 3. Secret Vault & Cloud Storage Integration
-- **Environment Template**: Copy [`.env.example`](file:///root/projects/gnosidex/.env.example) to `.env` (`cp .env.example .env`).
-- **Secret Vault ([`config/vault.py`](file:///root/projects/gnosidex/config/vault.py))**:
+- **Environment Template**: Copy [`.env.example`](.env.example) to `.env` (`cp .env.example .env`).
+- **Secret Vault ([`config/vault.py`](config/vault.py))**:
   - Point `INFISICAL_API_URL` and `INFISICAL_PROJECT_ID` to your organization's Infisical instance.
   - Inject Machine Identity credentials (`INFISICAL_CLIENT_ID`, `INFISICAL_CLIENT_SECRET`) or use `KB_VAULT_BACKEND=env` for standard CI runners.
-- **Cloud Storage ([`config/cloud.py`](file:///root/projects/gnosidex/config/cloud.py))**:
+- **Cloud Storage ([`config/cloud.py`](config/cloud.py))**:
   - Configure `S3_ENDPOINT_URL`, `S3_BUCKET_NAME`, and `S3_REGION` (compatible with AWS S3, Cloudflare R2, MinIO, Coolify S3, Backblaze).
   - Select your cloud authentication mode: `KB_CLOUD_AUTH=hermetic` (zero disk secrets) or `env`.
 
 ### 4. Knowledge Domain Organization
-- **Prune Sample Documents**: Remove or replace initial boilerplate examples in [`knowledge/engineering/adr/`](file:///root/projects/gnosidex/knowledge/engineering/adr/) and [`knowledge/activities/`](file:///root/projects/gnosidex/knowledge/activities/).
+- **Prune Sample Documents**: Remove or replace initial boilerplate examples in [`knowledge/engineering/adr/`](knowledge/engineering/adr/) and [`knowledge/activities/`](knowledge/activities/).
 - **Establish Business Domains**: Create domain directories that map to your team's real operational boundaries (e.g. `knowledge/data-platform/`, `knowledge/governance/`, `knowledge/infrastructure/`).
 - **Scaffold New Documents**: Use `./bin/gx create <template> <path>` to generate new standard documents with atomic writes.
 
@@ -113,7 +113,7 @@ When tailoring this starter kit to your organization's specific requirements, ex
 ## Directory Taxonomy
 
 ```text
-gnosidex/
+epistex/
 ├── .agents/                         # On-demand skill library & AGY stop-hook
 │   ├── hooks.json                   # Automated pre-stop verification hook
 │   ├── hooks/pre_stop.sh            # 4-gate gauntlet (tests + SRP + mocks + doctor)
@@ -121,8 +121,9 @@ gnosidex/
 ├── .githooks/                       # Git lifecycle hooks
 │   └── pre-commit                   # 300-line SRP guard & anti-poisoning check
 ├── bin/
-│   ├── gx                           # Primary executable CLI entrypoint (chmod +x)
-│   ├── gnosidex                     # Canonical alias symlink (chmod +x)
+│   ├── ep                           # Short canonical CLI entrypoint (chmod +x)
+│   ├── epistex                      # Full canonical alias symlink (chmod +x)
+│   ├── gx                           # Backward-compatible symlink (chmod +x)
 │   └── kb                           # Legacy transition symlink (chmod +x)
 ├── config/                          # Convention-over-configuration settings
 │   ├── app.py                       # App metadata, paths, IS_STARTER_KIT flag
@@ -171,7 +172,7 @@ gnosidex/
 
 ## Quickstart & CLI Commands
 
-All commands can be invoked directly using `./bin/gx` (or the `gnosidex` alias) without installation:
+All commands can be invoked directly using `./bin/ep` or `./bin/gx` (or the `epistex` alias) without installation:
 
 ### 1. Repository Health Audit (`gx doctor`)
 Validates frontmatter schema compliance, relative link integrity, line limit caps, and secret leak sentinels:
@@ -264,7 +265,7 @@ Example hermetic upload with Infisical secrets:
 
 ## 🏷️ Version Control & Branching Strategy (Laravel Model)
 
-Gnosidex adopts the **Laravel Release & Branching Architecture** to balance rapid open-source innovation with rock-solid enterprise stability:
+Epistex adopts the **Laravel Release & Branching Architecture** to balance rapid open-source innovation with rock-solid enterprise stability:
 
 ```text
   [1.x / Stable Series] ─────► v1.0.0 ──► v1.0.1 (Patches: bugfixes & zero breaking changes)
@@ -286,9 +287,9 @@ Gnosidex adopts the **Laravel Release & Branching Architecture** to balance rapi
    - **`MINOR` (e.g. `v1.1.0`)**: New CLI commands, additional templates, non-breaking schema additions.
    - **`MAJOR` (e.g. `v2.0.0`)**: Scheduled breaking architectural shifts or deprecation cleanups.
 4. **Starter Kit Downstream Upgrades**:
-   - When downstream organizations adopt Gnosidex as their internal knowledge base, they can track upstream improvements without conflict by adding Gnosidex as an upstream remote:
+   - When downstream organizations adopt Epistex as their internal knowledge base, they can track upstream improvements without conflict by adding Epistex as an upstream remote:
      ```bash
-     git remote add upstream https://github.com/ihkaru/gnosidex.git
+     git remote add upstream https://github.com/ihkaru/epistex.git
      git fetch upstream 1.x
      git merge --no-commit upstream/1.x
      ```

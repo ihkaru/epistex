@@ -10,9 +10,9 @@ CACHE_DIR = STORAGE_DIR / "cache"
 LOGS_DIR = STORAGE_DIR / "logs"
 
 # Application Metadata
-APP_NAME = "gnosidex"
+APP_NAME = "epistex"
 APP_VERSION = "1.2.0"
-APP_DESCRIPTION = "Gnosidex: Enterprise Git-Based Knowledge Base & Hermetic Execution Starter Kit"
+APP_DESCRIPTION = "Epistex: Enterprise Git-Based Knowledge Base & Hermetic Execution Starter Kit"
 
 # Operational Mode
 # True: Upstream starter kit development mode (engine maintenance, release checks active)

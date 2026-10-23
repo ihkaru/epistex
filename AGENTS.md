@@ -1,11 +1,11 @@
 # Agent-First Tool Contract & Operational Protocol (AGENTS.md)
 
 ## 1. Dual-Audience CLI Design
-The `gx` CLI (Gnosidex) provides strict stream separation between machine payload, runtime diagnostics, and visual display:
+The `ep` / `gx` CLI (Epistex) provides strict stream separation between machine payload, runtime diagnostics, and visual display:
 
 ```text
                ┌────────────────────────────────────────────────────────┐
-               │                     gx <subcommand>                    │
+               │                     ep <subcommand>                    │
                └───────────────────────────┬────────────────────────────┘
                                            │
                         ┌──────────────────┴──────────────────┐
@@ -70,7 +70,7 @@ When a command fails with `--json`, it returns an actionable envelope enabling s
 
 ## 3. Autonomous Repository Specialization (`gx init`)
 
-When a coding agent is instructed to adopt, initialize, or specialize Gnosidex for a company or project, the agent **MUST** invoke the initialization installer non-interactively:
+When a coding agent is instructed to adopt, initialize, or specialize Epistex for a company or project, the agent **MUST** invoke the initialization installer non-interactively:
 
 ```bash
 ./bin/gx init \
@@ -95,18 +95,18 @@ When a coding agent is instructed to adopt, initialize, or specialize Gnosidex f
 To guarantee that coding agents remain strictly aligned with the operational context and never confuse **Downstream Content Maintenance** with **Upstream Framework Releasing**, agents **MUST** respect the repository mode defined in `config/app.py`:
 
 ### A. Downstream Operational Mode (`IS_STARTER_KIT = False`)
-When Gnosidex has been specialized for an organization (e.g. via `gx init`):
+When Epistex has been specialized for an organization (e.g. via `gx init`):
 1. **Content-Only Scope**: The agent's responsibility is exclusively authoring, updating, and auditing knowledge documents (`knowledge/`), running hermetic tasks (`gx run`), and verifying health (`gx doctor`).
 2. **Zero-Release Invariant**: Autonomous agents **MUST NOT** bump engine versions, create git release tags, or generate engine release notes for content updates. Engine release triggers are completely deactivated.
 3. **Upstream Synchronization**: Downstream repositories pull framework and CLI enhancements from upstream without touching internal documents:
    ```bash
-   git remote add upstream https://github.com/ihkaru/gnosidex.git
+   git remote add upstream https://github.com/ihkaru/epistex.git
    git fetch upstream 1.x
    git merge --no-commit upstream/1.x
    ```
 
 ### B. Upstream Starter Kit Mode (`IS_STARTER_KIT = True`)
-When maintaining the open-source Gnosidex engine (`src/`, `bin/gx`, `config/`):
+When maintaining the open-source Epistex engine (`src/`, `bin/gx`, `config/`):
 1. **Automated Release Verification**: Run `./bin/gx doctor --check-release --json` to detect whether unreleased code commits warrant a Patch or Minor release.
 2. **Release Governance**: Follow the comprehensive state machine and pre-flight gates documented strictly in [`docs/RELEASING.md`](docs/RELEASING.md).
 3. **Anti-Poisoning Pruning**: When `gx init` is executed, [`docs/RELEASING.md`](docs/RELEASING.md) is automatically pruned so downstream agents never encounter engine release instructions.
@@ -123,11 +123,11 @@ The `.agents/` directory provides the on-demand skill library and stop-hook gate
 ├── hooks/
 │   └── pre_stop.sh                     # 4-gate gauntlet executed before agent may stop
 └── skills/
-    ├── gnosidex-doctor/
+    ├── epistex-doctor/
     │   └── SKILL.md                    # gx doctor audit, exit code interpretation & repair loop
-    ├── gnosidex-knowledge-author/
+    ├── epistex-knowledge-author/
     │   └── SKILL.md                    # Frontmatter schema, naming conventions, link integrity
-    └── gnosidex-downstream-setup/
+    └── epistex-downstream-setup/
         └── SKILL.md                    # Downstream specialization, upstream sync, anti-poisoning
 ```
 
@@ -135,9 +135,9 @@ The `.agents/` directory provides the on-demand skill library and stop-hook gate
 
 | Situation | Skill to Load |
 |---|---|
-| Verifying repository health / resolving errors | `gnosidex-doctor` |
-| Authoring, scaffolding, or auditing knowledge documents | `gnosidex-knowledge-author` |
-| Onboarding a new downstream organization | `gnosidex-downstream-setup` |
+| Verifying repository health / resolving errors | `epistex-doctor` |
+| Authoring, scaffolding, or auditing knowledge documents | `epistex-knowledge-author` |
+| Onboarding a new downstream organization | `epistex-downstream-setup` |
 
 ### Adding Downstream-Specific Skills
 

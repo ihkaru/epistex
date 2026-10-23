@@ -1,5 +1,5 @@
 {
-  "gnosidex-verification-gate": {
+  "epistex-verification-gate": {
     "enabled": true,
     "Stop": [
       {

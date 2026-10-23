@@ -2,15 +2,15 @@
 
 > [!IMPORTANT]
 > **Upstream Maintainer Scope Notice**:
-> This document governs the versioning, testing, and publication lifecycle of the **Gnosidex Core Engine** (`src/`, `bin/gx`, `config/`).
-> It applies **strictly to upstream maintainers** of the Gnosidex starter kit (`IS_STARTER_KIT = True`).
-> When Gnosidex is specialized for downstream enterprise production (via `gx init`), this file is automatically pruned to prevent agent prompt poisoning.
+> This document governs the versioning, testing, and publication lifecycle of the **Epistex Core Engine** (`src/`, `bin/gx`, `config/`).
+> It applies **strictly to upstream maintainers** of the Epistex starter kit (`IS_STARTER_KIT = True`).
+> When Epistex is specialized for downstream enterprise production (via `gx init`), this file is automatically pruned to prevent agent prompt poisoning.
 
 ---
 
 ## 1. Cadence & Release Model (Laravel-Inspired)
 
-Gnosidex follows the **Laravel Release & Branching Architecture**:
+Epistex follows the **Laravel Release & Branching Architecture**:
 - **Trunk (`main`)**: Canonical production-ready code.
 - **Series Maintenance Branch (`1.x`)**: Active maintenance branch for the 1.x major series. All patch and minor enhancements target `1.x` and merge into `main`.
 - **Git Tags**: Annotated tags formatted as `vMAJOR.MINOR.PATCH`.

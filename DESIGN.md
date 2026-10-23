@@ -1,11 +1,11 @@
-# Gnosidex System Design & Architecture (DESIGN.md)
+# Epistex System Design & Architecture (DESIGN.md)
 
 ## 1. High-Level Architecture
-**Gnosidex** couples **Domain-Driven Content Organization** with an **Event-Driven CLI Engine** and **Hermetic Code Execution Runner**:
+**Epistex** couples **Domain-Driven Content Organization** with an **Event-Driven CLI Engine** and **Hermetic Code Execution Runner**:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        gx / gnosidex CLI                               │
+│                        ep / gx / epistex CLI                           │
 │            (Agent-First Stream Purity / POSIX Exit Codes)              │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │

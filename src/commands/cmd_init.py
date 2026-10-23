@@ -141,7 +141,7 @@ def run_init(
     root_dir: Optional[Path] = None,
     dispatcher: Optional[EventDispatcherInterface] = None,
 ) -> Tuple[int, Dict[str, Any]]:
-    """Initialize and specialize Gnosidex repository for an organization."""
+    """Initialize and specialize Epistex repository for an organization."""
     base_dir = root_dir or ROOT_DIR
     final_name, final_desc, final_owner = _resolve_init_inputs(name, description, owner, interactive)
 

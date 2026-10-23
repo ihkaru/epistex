@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# Gnosidex Pre-Stop Verification Gate (.agents/hooks/pre_stop.sh)
+# Epistex Pre-Stop Verification Gate (.agents/hooks/pre_stop.sh)
 # Runs the 4-gate gauntlet before an AI coding agent may stop.
 # Exit 0 = all gates pass (agent may stop).
 # Exit 1 = gate failed (agent is hard-blocked; must remediate).
@@ -13,7 +13,7 @@ ERRORS=0
 
 echo ""
 echo "========================================"
-echo "  Gnosidex Agent Verification Gauntlet"
+echo "  Epistex Agent Verification Gauntlet"
 echo "========================================"
 echo ""
 
@@ -58,20 +58,21 @@ echo ""
 
 # ── Gate 4: Repository Health Audit ──────────────────────
 echo "Gate 4: Running end-to-end repository health audit..."
-if ./bin/gx doctor --json 2>&1 | python3 -c "
+if ./bin/gx doctor --json 2>/dev/null | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
 status = data.get('status', 'unknown')
-if status == 'healthy':
-    print('Repository status: healthy')
+total_issues = data.get('total_issues', len(data.get('issues', [])))
+if status in ('ok', 'healthy') and total_issues == 0:
+    print('Repository status: healthy (0 issues)')
     sys.exit(0)
 else:
     issues = data.get('issues', [])
-    print(f'Repository status: {status} ({len(issues)} issue(s))')
+    print(f'Repository status: {status} ({total_issues} issue(s))')
     for issue in issues:
         print(f'  - {issue}')
     sys.exit(1)
-" 2>&1; then
+"; then
   echo "$PASS Gate 4: Repository is healthy."
 else
   echo "$FAIL Gate 4: Repository health check failed. Inspect gx doctor output."

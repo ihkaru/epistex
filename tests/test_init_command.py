@@ -22,7 +22,7 @@ class TestInitCommand(unittest.TestCase):
         # Scaffold mock repository structure
         (self.root / "config").mkdir(parents=True)
         (self.root / "config" / "app.py").write_text(
-            'APP_NAME = "gnosidex"\nAPP_DESCRIPTION = "Starter Kit"\nIS_STARTER_KIT = True\n',
+            'APP_NAME = "epistex"\nAPP_DESCRIPTION = "Starter Kit"\nIS_STARTER_KIT = True\n',
             encoding="utf-8",
         )
         (self.root / ".env.example").write_text("SAMPLE_KEY=sample_val\n", encoding="utf-8")
@@ -40,7 +40,7 @@ class TestInitCommand(unittest.TestCase):
         (act_dir / "README.md").write_text("# Audit Sample\n", encoding="utf-8")
 
         (self.root / "README.md").write_text(
-            "# Gnosidex\n\n"
+            "# Epistex\n\n"
             "> [!IMPORTANT]\n"
             "> **Starter Kit Specialization Notice (Replace Once Adopted)**:\n"
             "> Please specialize this repository.\n\n"
@@ -73,7 +73,7 @@ class TestInitCommand(unittest.TestCase):
 
         # Verify disk remains untouched
         app_content = (self.root / "config" / "app.py").read_text(encoding="utf-8")
-        self.assertIn('APP_NAME = "gnosidex"', app_content)
+        self.assertIn('APP_NAME = "epistex"', app_content)
         self.assertFalse((self.root / ".env").exists())
 
     def test_init_execution_modifies_files_and_cleans_samples(self):

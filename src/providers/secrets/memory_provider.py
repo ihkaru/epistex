@@ -29,7 +29,8 @@ class MemorySecretProvider(SecretProviderInterface):
         return new_env
 
     def is_available(self) -> bool:
-        return True
+        """Check availability of in-memory secret store."""
+        return isinstance(self._secrets, dict)
 
     def get_backend_name(self) -> str:
         return "memory"

@@ -1,20 +1,20 @@
 ---
-name: gnosidex-downstream-setup
+name: epistex-downstream-setup
 description: |
   Step-by-step onboarding guide for coding agents tasked with specializing a
-  freshly cloned Gnosidex starter kit into a production knowledge base for a
-  specific organization. Covers gx init, upstream sync wiring, domain SOP
+  freshly cloned Epistex starter kit into a production knowledge base for a
+  specific organization. Covers gx/ep init, upstream sync wiring, domain SOP
   authoring, and the anti-poisoning invariants that protect downstream agents.
 ---
 
-# Gnosidex Downstream Specialization Skill
+# Epistex Downstream Specialization Skill
 
 ## Overview
 
 This skill governs the transition from **upstream starter kit** (`IS_STARTER_KIT = True`)
 to **downstream production knowledge base** (`IS_STARTER_KIT = False`).
 
-After running `gx init`, a Gnosidex repository transforms into an organization-specific
+After running `gx init` (or `ep init`), an Epistex repository transforms into an organization-specific
 knowledge base. This skill ensures that transition is complete, safe, and well-documented.
 
 ---
@@ -22,7 +22,7 @@ knowledge base. This skill ensures that transition is complete, safe, and well-d
 ## Step 1 — Clone & Initialize
 
 ```bash
-git clone https://github.com/ihkaru/gnosidex.git my-org-kb
+git clone https://github.com/ihkaru/epistex.git my-org-kb
 cd my-org-kb
 
 # Wire the upstream remote for future engine updates
@@ -74,7 +74,7 @@ Open `GEMINI.md` and add the following sections (adapt to your domain):
 ## Content-Only Scope (IS_STARTER_KIT = False)
 - Engine version bumps, git release tags, and engine release notes are FORBIDDEN
 - All changes are content-only: knowledge/, docs/, kegiatan/, etc.
-- To receive engine updates from upstream Gnosidex:
+- To receive engine updates from upstream Epistex:
   git fetch upstream main
   git merge --no-commit upstream/main
 ```
@@ -113,7 +113,7 @@ echo "Pre-commit hook installed."
 
 ## Step 4 — Upstream Engine Sync Protocol
 
-When new features or fixes are released in upstream Gnosidex:
+When new features or fixes are released in upstream Epistex:
 
 ```bash
 # Fetch upstream changes (engine only)
@@ -129,7 +129,7 @@ git merge --no-commit upstream/main
 python3 -m unittest discover -s tests -v
 
 # If tests pass, complete the merge
-git commit -m "chore(upstream): sync engine from gnosidex vX.Y.Z"
+git commit -m "chore(upstream): sync engine from epistex vX.Y.Z"
 ```
 
 > Never merge upstream changes to `knowledge/`, `docs/` (your domain docs), or

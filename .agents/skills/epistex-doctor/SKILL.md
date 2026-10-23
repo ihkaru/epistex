@@ -1,15 +1,15 @@
 ---
-name: gnosidex-doctor
+name: epistex-doctor
 description: |
-  Runs the full Gnosidex repository health audit (gx doctor), interprets the JSON
+  Runs the full Epistex repository health audit (gx/ep doctor), interprets the JSON
   output, reports all detected issues with actionable fix hints, and guides the
   agent toward remediation. Use whenever the repository state needs to be verified
   before committing or completing a task.
 ---
 
-# Gnosidex Doctor Skill
+# Epistex Doctor Skill
 
-This skill governs how coding agents interact with the `gx doctor` health audit
+This skill governs how coding agents interact with the `gx` / `ep doctor` health audit
 command. It provides interpretation rules and remediation workflows.
 
 ## When to Activate

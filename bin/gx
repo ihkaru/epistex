@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main executable entrypoint for gx CLI tool (Gnosidex)."""
+"""Main executable entrypoint for ep / gx CLI tool (Epistex)."""
 
 import os
 import sys
@@ -100,7 +100,7 @@ def _build_parser() -> AgentArgumentParser:
     """Build root CLI argument parser and register subcommands."""
     prog_name = Path(sys.argv[0]).name if sys.argv and sys.argv[0] else "gx"
     parser = AgentArgumentParser(prog=prog_name, description=f"{APP_DESCRIPTION} (v{APP_VERSION})")
-    parser.add_argument("--version", action="version", version=f"gx (gnosidex) {APP_VERSION}")
+    parser.add_argument("--version", action="version", version=f"{prog_name} (epistex) {APP_VERSION}")
     add_common_flags(parser)
 
     subparsers = parser.add_subparsers(dest="subcommand", required=True)

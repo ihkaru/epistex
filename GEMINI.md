@@ -1,20 +1,21 @@
-# Gnosidex Architecture & Governance Guide (GEMINI.md)
+# Epistex Architecture & Governance Guide (GEMINI.md)
 
 ## 1. Overview & Core Philosophy
-**Gnosidex** is an enterprise-grade, plug-and-play, high-performance Git-based Knowledge Base starter kit. It provides:
+**Epistex** is an enterprise-grade, plug-and-play, high-performance Git-based Knowledge Base starter kit. It provides:
 - **Zero External Runtime Dependencies**: Standard Python 3.10+ execution out of the box.
 - **Convention-Over-Configuration**: Predictable Laravel-inspired folder layout (`bin/`, `config/`, `knowledge/`, `src/`, `storage/`).
 - **SOLID & Interface-First Design**: Strict Dependency Inversion via abstract contracts (`src/contracts/`).
 - **Event-Driven Architecture (EDA)**: Extensible pub/sub dispatcher and lifecycle hooks (`src/events/`).
 - **Hermetic Code Execution**: Memory-only secret injection with first-party Infisical support and fallback to process environment.
-- **Dual-Audience CLI (`gx` / `gnosidex`)**: Agent-first tool contract with pure machine-readable STDOUT on `--json` and POSIX sysexits.
+- **Dual-Audience CLI (`ep` / `gx` / `epistex`)**: Agent-first tool contract with pure machine-readable STDOUT on `--json` and POSIX sysexits.
 
 ## 2. Directory Taxonomy & Conventions
 ```text
 .
 ├── bin/
-│   ├── gx                           # Primary executable CLI entrypoint (chmod +x)
-│   ├── gnosidex                     # Canonical alias symlink (chmod +x)
+│   ├── ep                           # Short canonical CLI entrypoint (chmod +x)
+│   ├── epistex                      # Full canonical alias symlink (chmod +x)
+│   ├── gx                           # Backward-compatible symlink (chmod +x)
 │   └── kb                           # Legacy transition symlink (chmod +x)
 ├── config/                          # Centralized convention configuration
 │   ├── app.py                       # App metadata, defaults, exit code mappings
@@ -72,15 +73,15 @@ On-demand skill library and stop-hook gate for coding agents:
 ├── hooks.json                    # AGY stop-hook: runs pre_stop.sh before agent stops
 ├── hooks/pre_stop.sh             # 4-gate verification gauntlet (tests + SRP + mocks + doctor)
 └── skills/
-    ├── gnosidex-doctor/          # gx doctor audit workflow & repair loop
-    ├── gnosidex-knowledge-author/ # Frontmatter schema, naming conventions, link integrity
-    └── gnosidex-downstream-setup/ # Downstream specialization & upstream sync protocol
+    ├── epistex-doctor/           # gx/ep doctor audit workflow & repair loop
+    ├── epistex-knowledge-author/ # Frontmatter schema, naming conventions, link integrity
+    └── epistex-downstream-setup/ # Downstream specialization & upstream sync protocol
 ```
 
 Read the relevant `SKILL.md` before performing specialized tasks:
-- Health audits & error repair → `.agents/skills/gnosidex-doctor/SKILL.md`
-- Authoring knowledge documents → `.agents/skills/gnosidex-knowledge-author/SKILL.md`
-- Onboarding a downstream organization → `.agents/skills/gnosidex-downstream-setup/SKILL.md`
+- Health audits & error repair → `.agents/skills/epistex-doctor/SKILL.md`
+- Authoring knowledge documents → `.agents/skills/epistex-knowledge-author/SKILL.md`
+- Onboarding a downstream organization → `.agents/skills/epistex-downstream-setup/SKILL.md`
 
 ---
 
@@ -124,6 +125,6 @@ Confirmation that IS_STARTER_KIT = False is active and release mechanics are sup
 Upstream sync protocol: git fetch upstream main && git merge --no-commit upstream/main
 ```
 
-> See `.agents/skills/gnosidex-downstream-setup/SKILL.md` for the full onboarding workflow.
+> See `.agents/skills/epistex-downstream-setup/SKILL.md` for the full onboarding workflow.
 
 
